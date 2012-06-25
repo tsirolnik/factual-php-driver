@@ -9,11 +9,11 @@
  * @license Apache 2.0
  */
 class CrosswalkQuery extends FactualQuery {
-	private $factualId; //string
-	private $limit; //int
-	private $_namespace; //string
-	private $namespaceId; //string
-	private $only = array ();
+	protected $factualId; //string
+	protected $limit; //int
+	protected $_namespace; //string
+	protected $namespaceId; //string
+	protected $only = array ();
 	const RESPONSETYPE = "CrosswalkResponse";
 
 	/**
@@ -107,7 +107,7 @@ class CrosswalkQuery extends FactualQuery {
 		return implode("&", $temp);
 	}
 
-	private function onlysOrNull() {
+	protected function onlysOrNull() {
 		if (!empty ($this->only)) {
 			$this->only = array_filter($this->only);
 			return implode(",", $this->only);
@@ -122,7 +122,7 @@ class CrosswalkQuery extends FactualQuery {
 	 * @return string
 	 * @internal Not sure why val is obj in Java version in return line
 	 */
-	private function urlPair($name, $val) {
+	protected function urlPair($name, $val) {
 		if ($val != null) {
 			try {
 				if (self :: URLENCODE) {
