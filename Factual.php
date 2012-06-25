@@ -141,7 +141,7 @@ class Factual {
 				break;
 			case "FacetQuery" :
 				$res = $this->urlForFacets($tableName, $query);
-				break;
+				break;				
 			default :
 				throw new Exception(__METHOD__ . " class type '" . get_class($query) . "' not recognized");
 				$res = false;
@@ -198,7 +198,7 @@ class Factual {
 			$queryStrings[] = "\"" . $index . "\":" . "\"" . $call . "\"";
 			$res['response'][] = $mQuery['query']->getResponseType();
 		}
-		$res['url'] = "http://api.v3.factual.com/multi?queries={" . implode(",", $queryStrings) . "}";
+		$res['url'] = $this->factHome."multi?queries={" . implode(",", $queryStrings) . "}";
 		return $res;
 	}
 
@@ -209,8 +209,13 @@ class Factual {
 	*/
 
 	protected function urlForGeopulse($tableName, $query) {
-		return "places/geopulse?" . $query->toUrlQuery();
+		return $this->factHome."places/geopulse?" . $query->toUrlQuery();
 	}
+
+	  protected function urlForMonetize($tableName,$query) {
+	    return $this->factHome.$tableName."/monetize?" . $query->toUrlQuery();
+	  }
+
 
 	/**
 	 * Queue a request for inclusion in a multi request.
@@ -235,6 +240,16 @@ class Factual {
 		$res = $this->urlForMulti();
 		return new MultiResponse($this->request($res['url']), $res['response']);
 	}
+
+
+  /**
+   * Runs a monetize <tt>query</tt> against the specified Factual table.
+   * @param query The query to run against monetize.
+   * @return the response of running <tt>query</tt> against Factual.
+   */
+  public function monetize($tableName,$query) {
+ 	return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
+  }
 
 	/**
 	 * Signs a 'raw' request (a complete query) and returns the JSON results

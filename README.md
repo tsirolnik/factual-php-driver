@@ -441,9 +441,7 @@ The driver fully support Factual's Resolve feature, which lets you start with in
 
 Each result record will include a confidence score (<tt>"similarity"</tt>), and a flag indicating whether Factual decided the entity is the correct resolved match with a high degree of accuracy (<tt>"resolved"</tt>).
 
-For any Resolve query, there will be 0 or 1 entities returned with <tt>"resolved"=true</tt>. If there was a full match, it is guaranteed to be the first record in the JSON response.  See the [API documentation](http://developer.factual.com/display/docs/Places+API+-+Resolve) for details.
-
-(See [the Resolve Blog](http://blog.factual.com/factual-resolve) for more background.)
+For any Resolve query, there will be 0 or 1 entities returned with <tt>"resolved"=true</tt>. If there was a full match, it is guaranteed to be the first record in the JSON response.  See the [Resolve API documentation](http://developer.factual.com/display/docs/Places+API+-+Resolve) for details.
 
 ## Simple Resolve Examples
 Use the common query structure to add known attributes to the query:
@@ -482,7 +480,7 @@ The schema endpoint returns table metadata:
 	print_r($res->getColumnSchemas());
 
 # Facets
-The driver supports Factual's Facets feature, which returns summary row counts grouped by facets of data (think of this as a combined <tt>count()</tt> and <tt>GROUP BY</tt> function in SQL).  Use Facets to break down the results of your query by count of results. For example, you may want to query all businesses within 500m of a location, group those businesses by category, and get a count of each.   See the [API documentation](http://developer.factual.com/display/docs/Core+API+-+Facets) for details.
+The driver supports Factual's Facets feature, which returns summary row counts grouped by facets of data (think of this as a combined <tt>count()</tt> and <tt>GROUP BY</tt> function in SQL).  Use Facets to break down the results of your query by count of results. For example, you may want to query all businesses within 500m of a location, group those businesses by category, and get a count of each.   See the [Facets API documentation](http://developer.factual.com/display/docs/Core+API+-+Facets) for details.
 
 ## Facets Example
 
@@ -518,8 +516,6 @@ The response looks like:
 		)
 	)
 
-
-
 You cannot facet on all fields, only those configured by Factual.  Use the <tt>schema</tt> call to determine the fields for which you can return facets; if the faceted attribute of the schema is <tt>true</tt>, you can facet. 
 
 ## Top Level Facets Parameters
@@ -551,7 +547,7 @@ You can also employ the filters, include count, geo and search parameters like a
 
 #Multi Queries
 
-The driver fully supports Factual's Multi feature, which enables your making up to three queries on a single http request.  See the [API documentation for details](http://developer.factual.com/display/docs/Core+API+-+Multi).
+The driver fully supports Factual's Multi feature, which enables your making up to three queries on a single http request.  See the [Multi API documentation](http://developer.factual.com/display/docs/Core+API+-+Multi) for details.
 
 
 ## Simple Multi Example
@@ -630,6 +626,43 @@ The results of the above shortcut look like:
 		        )
 		)
 	)
+
+# Monetize
+The driver fully supports Factual's Monetize feature, which enables you to find deals, offers, and other consumer engagementsin Factual's Global Places database.  See the [Monetize API documentation](http://developer.factual.com/display/docs/Places+API+-+Monetize) for details.
+
+Use the usual Query object to specify filters:
+
+## Monetize Examples
+	
+	//get the first three consumer engagements for zipcode 95008
+	$query = new FactualQuery;	
+	$query->field("place_postcode")->equal("95008");
+	$query->field("place_country")->equal("us");
+	$query->limit(3);
+	$res = $factual->monetize("places",$query); 
+	print_r($res->getData()); 
+
+The trick here is to remember that -- because we 'snap' offers et al. to places -- our attributes may overwrite those of the same name from the offer provider.  To obviate this conflict, in the Monetize API only we preface our place attributes with (wait for it) 'place', as in the example above.
+
+Note that you can combine monetize-specfic attributes with elements of places search you are used to.  For example, adding:
+
+	$query->field("source_namespace")->equal("grubhub");
+
+to the above obtains only those engagemnts from our partners at Grubhub.
+
+# World Geographies
+While Factual's <tt>places</tt> table provides access to the world's business and landmarks, our <tt>world-geographies</tt> table provides structured access to over 5.2 million geographies with 8.3 million name variants in 250 countries.  Use our World Geographies table to lookup placenames, see how one place relates to another, and translate placenames between multiple languages. See the [World Geographies API documentation](http://developer.factual.com/display/docs/World+Geographies) for details.
+
+## World Geographies Example
+
+	//find all localities (towns and cities) called "Wayne" in the US 
+	$query = new FactualQuery;
+	$query->field("name")->equal("wayne");
+	$query->field("country")->equal("us");
+	$query->field("placetype")->equal("locality");	//search on specific place type
+	$query->only("name,placetype,longitude,latitude"); //"take only what you need from me.."(singing)
+	$res = $factual->fetch("world-geographies", $query);
+	print_r($res->getData()); 
 
 #Help, Debugging & Testing
 
