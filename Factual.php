@@ -276,10 +276,20 @@ class Factual {
 		// Build request with OAuth request params
 		$request = new OAuthRequester($urlStr, $requestMethod, $params);
 		//Make request
-		$result = $request->doRequest(0, $customHeaders);
+		try {
+	    	$result = $request->doRequest(0, $customHeaders);
+		} catch (Exception $e) {
+			//catch client exception
+		    $info['request'] = $urlStr;
+			$info['driver'] = $this->config['factual']['driverversion'];
+		    $info['method'] = $requestMethod;
+		    $info['message'] = "Service exception (likely a problem on the server side). Client did not connect and returned '".$e->getMessage()."'";
+		    $factualE = new FactualApiException($info);
+		    throw $factualE;
+		}
 		$result['request'] = $urlStr; //pass request string onto response
 		$result['tablename'] = $this->lastTable; //pass table name to result object (not available with rawGet())
-		//exception handling
+		//catch server exception
 		if ($result['code'] >= 400) {
 			$body = json_decode($result['body'], true);
 			//get a boatload of debug data
