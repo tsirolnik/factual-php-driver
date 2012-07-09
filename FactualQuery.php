@@ -155,14 +155,30 @@ class FactualQuery {
 	/**
 	 * Adds a filter so that results can only be (roughly) within the specified
 	 * geographic circle.
-	 * 
 	 * @param circle The circle within which to bound the results.
 	 * @return this Query.
 	 */
 	public function within($circle) {
+		if (get_class($circle) != "FactualCircle"){
+			throw new Exception(__METHOD__." must take FactualCircle object as parameter");
+			return false;
+		}
 		$this->geo = $circle;
 		return $this;
+	}
 
+	/**
+	 * Adds a filter so that results can only be obtained at a specified point
+	 * @param circle The circle within which to bound the results.
+	 * @return this Query.
+	 */
+	public function at($point) {
+		if (get_class($point) != "FactualPoint"){
+			throw new Exception(__METHOD__." must take FactualPoint object as parameter");
+			return false;
+		}
+		$this->geo = $point;
+		return $this;
 	}
 
 	/**

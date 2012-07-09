@@ -726,9 +726,24 @@ The driver mainly offers convenence: it signs requests, builds conformant querie
 The <tt>rawGet()</tt> method only signs and submits the request; remember to escape your JSON. Responses are raw JSON.
 
 # Geocoding
-Factual does not provide a geocoding service, but we've integrated a third-party Web Service that can easily be swapped out.
 
-These methods are experimental and unsupported, but (we hope) helpful:
+## Factual Geocoding
+Currently Factual offers only a Reverse Geocoder (coordinates -> address).  We also provide connectors to third-party geocoding serices (below).
+
+### Factual Reverse Geocoder
+Reverse geocoding is converting longitude and latitudy to an address or geography.  See the [Reverse Geocoder API documentation](http://developer.factual.com/display/docs/Places+API+-+Reverse+Geocoder) for details. 
+
+## Simple Reverse Geocoder Example
+	
+	//Find the nearest address
+	$lon = -122.143895;
+	$lat = 37.425674;
+	$point = new FactualPoint($lat,$lon);
+	$res = $factual->factualReverseGeoCode($point);	
+	print_r($res->getData());	
+
+## Third-Party Geocoding
+We've integrated a third-party Web Service for both forward- and reverse geocding.  These can easily be swapped out to support your preferred service.  These methods are experimental and unsupported, but (we hope) helpful:
 
 	//geocode (convert an address to longitude and latitude)
 	$res = $factual->geocode("425 Sherman Ave, Palo Alto, CA, USA");

@@ -203,12 +203,6 @@ class Factual {
 		return $res;
 	}
 
-	/*
-	 protected function urlForGeocode() {
-	   return "places/geocode";
-	 }
-	*/
-
 	protected function urlForGeopulse($tableName, $query) {
 		return $this->factHome."places/geopulse?" . $query->toUrlQuery();
 	}
@@ -217,6 +211,21 @@ class Factual {
 	    return $this->factHome.$tableName."/monetize?" . $query->toUrlQuery();
 	  }
 
+	 protected function urlForGeocode($tableName,$query) {
+	   return $this->factHome.$tableName."/geocode?" . $query->toUrlQuery();
+	 }
+
+ /**
+   * Reverse geocodes by returning a response containing the address nearest a given point.
+   * @param obj point The point for which the nearest address is returned
+   * @param string tableName Optional. The tablenae to geocode against.  Currently only 'places' is supported.
+   * @return the response of running a reverse geocode query for <tt>point</tt> against Factual.
+   */
+  public function factualReverseGeocode($point,$tableName="places") {
+  	$query = new FactualQuery;
+  	$query->at($point);
+  	return new ReadResponse($this->request($this->urlForGeocode($tableName, $query)));
+  }
 
 	/**
 	 * Queue a request for inclusion in a multi request.
@@ -299,8 +308,8 @@ class Factual {
 			$info['status'] = $body['status'];
 			$info['error_type'] = $body['error_type'];
 			$info['message'] = $body['message'];
-			$info['headers'] = $result['headers'];
 			$info['request'] = $result['request'];
+			$info['headers'] = $result['headers'];
 			$info['driver'] = $this->config['factual']['driverversion'];
 			if (!empty ($result['tablename'])) {
 				$info['tablename'] = $result['tablename'];
@@ -319,6 +328,19 @@ class Factual {
 	 */
 	public function version() {
 		return $this->config['factual']['driverversion'];
+	}
+
+	/**
+	 * Autoloader for file dependencies
+	 * Called by spl_autoload_register() to avoid conflicts with autoload() methods from other libs
+	 */
+	public static function factualAutoload($className) {
+        $filename = dirname(__FILE__)."/".$className . ".php";
+        // don't interfere with other classloaders
+        if(!file_exists($filename)) {
+            return;
+        }
+        include $filename;
 	}
 
 	//The following methods are included as handy convenience; unsupported and experimental
@@ -353,21 +375,5 @@ class Factual {
 		}
 		return $this->geocoder;
 	}
-
-	/**
-	 * Autoloader for file dependencies
-	 * Called by spl_autoload_register() to avoid conflicts with autoload() methods from other libs
-	 */
-	public static function factualAutoload($className) {
-        $filename = dirname(__FILE__)."/".$className . ".php";
-
-        // don't interfere with other classloaders
-        if(!file_exists($filename)) {
-            return;
-        }
-
-        include $filename;
-	}
-
 }
 ?>
