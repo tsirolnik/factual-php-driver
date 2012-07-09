@@ -370,14 +370,14 @@ You can nest AND and OR logic to whatever level of complexity you need. For exam
 # Crosswalk
 The driver fully support Factual's Crosswalk feature, which lets you "crosswalk" the web and relate entities between Factual's data and that of other web authorities.  See the [API documentation](http://developer.factual.com/display/docs/Places+API+-+Crosswalk) for details.
 
-(See [the Crosswalk Blog](http://blog.factual.com/crosswalk-api) for context.)
+Note that as of v1.4.3, crosswalk requests are treated as any other table read -- this means that you can access the Crosswalk table using normal search and filters, as in the example below.
 
 ## Simple Crosswalk Example
 
-    // Get all Crosswalk data for a specific Places entity, using its Factual ID:
-	$query = new CrosswalkQuery();
-	$query->factualId("97598010-433f-4946-8fd5-4a6dd1639d77");	 
-	$res = $factual->fetch("places", $query);
+    	// Get all Crosswalk data for a specific Place, using its Factual ID:
+    	$query = new FactualQuery;    
+	$query->field("factual_id")->equal("97598010-433f-4946-8fd5-4a6dd1639d77");	 
+	$res = $factual->fetch("crosswalk", $query);
 	print_r($res->getData());
 	
 ## Crosswalk Filter Parameters

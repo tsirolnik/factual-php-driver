@@ -7,6 +7,7 @@
  * @author Tyler
  * @package Factual
  * @license Apache 2.0
+ * @deprecated 1.4.3 - Jul 8, 2012
  */
 class CrosswalkQuery extends FactualQuery {
 	protected $factualId; //string
