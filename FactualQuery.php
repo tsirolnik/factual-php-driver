@@ -17,7 +17,7 @@ class FactualQuery {
 	protected $limit; //int
 	protected $offset; //int
 	protected $includeRowCount = false; //bool
-	protected $circle = null; 
+	protected $geo = null; 
 	protected $keyValuePairs = array(); //misc key-value pairs added as additional parameters
 	const RESPONSETYPE = "ReadResponse";
 
@@ -160,8 +160,7 @@ class FactualQuery {
 	 * @return this Query.
 	 */
 	public function within($circle) {
-		$this->circle = $circle;
-		
+		$this->geo = $circle;
 		return $this;
 
 	}
@@ -268,8 +267,8 @@ class FactualQuery {
 	}
 
 	protected function geoBoundsJsonOrNull() {
-		if ($this->circle != null) {
-			return $this->circle->toJsonStr();
+		if ($this->geo != null) {
+			return $this->geo->toJsonStr();
 		} else {
 			return null;
 		}
