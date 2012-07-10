@@ -314,8 +314,8 @@ Queries support logical AND'ing your row filters. For example:
     $query = new FactualQuery;
     $query->_and(
     	array(
-       		$query->criteria("name")->beginsWith("Coffee"),
-  	   		$query->criteria("tel")->blank()
+       		$query->filed("name")->beginsWith("Coffee"),
+  	   		$query->field("tel")->blank()
   	   	)
 	);
 	$res = $factual->fetch("places", $query);
@@ -336,8 +336,8 @@ Queries support logical OR'ing your row filters. For example:
     // Build a query to find entities where the name begins with "Coffee" OR the telephone is blank:
     $query = new FactualQuery;
     $query->_or(array(
-       	$query->criteria("name")->beginsWith("Coffee"),
-  	   	$query->criteria("tel")->blank()
+       	$query->field("name")->beginsWith("Coffee"),
+  	   	$query->field("tel")->blank()
   	   )
 	);	
 	$res = $factual->fetch("places", $query);
