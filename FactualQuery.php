@@ -159,7 +159,7 @@ class FactualQuery {
 	 * @return this Query.
 	 */
 	public function within($circle) {
-		if (get_class($circle) != "FactualCircle"){
+		if (!$circle instanceof FactualCircle){
 			throw new Exception(__METHOD__." must take FactualCircle object as parameter");
 			return false;
 		}
@@ -173,7 +173,7 @@ class FactualQuery {
 	 * @return this Query.
 	 */
 	public function at($point) {
-		if (get_class($point) != "FactualPoint"){
+		if (!$point instanceof FactualPoint){
 			throw new Exception(__METHOD__." must take FactualPoint object as parameter");
 			return false;
 		}

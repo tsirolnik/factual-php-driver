@@ -44,10 +44,7 @@ class Factual {
 		);
 		$this->signer = OAuthStore :: instance("2Leg", $options);
 		//register autoloader
-		spl_autoload_register(array (
-			get_class(),
-			'factualAutoload'
-		));
+		spl_autoload_register(array (get_class(), 'factualAutoload'	));
 	}
 
 	/**
