@@ -1,0 +1,18 @@
+{
+    "name": "Factual/factual-php-driver",
+    "type": "php driver",
+    "description": "This is the Factual-supported PHP driver for Factual's public API.",
+    "keywords": ["Factual"],
+    "homepage": "http://www.factual.com/",
+    "license": "Apache License 2.0",
+    "authors": [
+        {
+            "name": "Tyler Bell",
+            "email": ""
+        }
+    ],
+    "require": {
+        "php": ">=5.0.0"
+    },
+    "target-dir": "Factual/factual-php-driver"
+}
