@@ -11,7 +11,7 @@
     "Factual"
   ], 
   "license": "Apache License 2.0", 
-  "name": "Factual/factual-php-driver", 
+  "name": "factual/factual-php-driver", 
   "require": {
     "php": ">=5.1.2"
   }, 
