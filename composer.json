@@ -1,18 +1,21 @@
 {
     "name": "Factual/factual-php-driver",
     "type": "php driver",
-    "description": "This is the Factual-supported PHP driver for Factual's public API.",
+    "description": "This is the official PHP driver for Factual's public API.",
     "keywords": ["Factual"],
-    "homepage": "http://www.factual.com/",
+    "homepage": "http://developer.factual.com/display/docs/Factual+Developer+APIs+Version+3"
     "license": "Apache License 2.0",
     "authors": [
         {
             "name": "Tyler Bell",
-            "email": ""
-        }
+            "email": "tyler@factual.com"
+    }
     ],
     "require": {
-        "php": ">=5.0.0"
+        "php": ">=5.1.2"
     },
+    "support": {
+        "forum": "http://support.factual.com/factual"
+    }
     "target-dir": "Factual/factual-php-driver"
 }
