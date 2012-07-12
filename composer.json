@@ -18,6 +18,8 @@
   "support": {
     "forum": "http://support.factual.com/factual"
   }, 
-  "target-dir": "Factual/factual-php-driver", 
+  "autoload": {
+    "psr-0": {"Factual": ""}
+  },
   "type": "php driver"
 }
