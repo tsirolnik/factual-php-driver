@@ -97,6 +97,17 @@ abstract class FactualResponse {
     	return $rootJSON;	
 	}
 
+	/**
+	 * Test for success (n 200 status return)
+	 */
+	 public function success(){
+	 	if ($this->status = 200){
+	 		return true;
+	 	} else {
+	 		return false;
+	 	}
+	 }
+
   /**
    * Get the entire JSON response from Factual
    * @return string 
