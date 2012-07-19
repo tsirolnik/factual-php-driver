@@ -80,7 +80,9 @@ abstract class FactualResponse {
 	protected function parseJSON($json){
 		//assign data value
     	$rootJSON = json_decode($json,true);
-    	$this->data = $rootJSON['response']['data'];
+    	if (isset($rootJSON['response']['data'])){
+    		$this->data = $rootJSON['response']['data'];
+    	}
     	//assign status value
     	$this->status = $rootJSON['status'];
     	//assign version
