@@ -27,6 +27,7 @@ class Factual {
 	protected $configPath = "config.ini"; //where the config file is found: path + file
 	protected $lastTable = null; //last table queried
 	protected $fetchQueue = array (); //array of queries teed up for multi
+	protected $debug = false; //debug flag
 
 	/**
 	 * Constructor. Creates authenticated access to Factual.
@@ -44,7 +45,10 @@ class Factual {
 		);
 		$this->signer = OAuthStore :: instance("2Leg", $options);
 		//register autoloader
-		spl_autoload_register(array (get_class(), 'factualAutoload'	));
+		spl_autoload_register(array (
+			get_class(),
+			'factualAutoload'
+		));
 	}
 
 	/**
@@ -68,6 +72,10 @@ class Factual {
 				throw new Exception("Failed parsing config file");
 			}
 		}
+	}
+
+	public function debug() {
+		$this->debug = true;
 	}
 
 	/**
@@ -139,7 +147,7 @@ class Factual {
 				break;
 			case "FacetQuery" :
 				$res = $this->urlForFacets($tableName, $query);
-				break;				
+				break;
 			default :
 				throw new Exception(__METHOD__ . " class type '" . get_class($query) . "' not recognized");
 				$res = false;
@@ -196,33 +204,83 @@ class Factual {
 			$queryStrings[] = "\"" . $index . "\":" . "\"" . $call . "\"";
 			$res['response'][] = $mQuery['query']->getResponseType();
 		}
-		$res['url'] = $this->factHome."multi?queries={" . implode(",", $queryStrings) . "}";
+		$res['url'] = $this->factHome . "multi?queries={" . implode(",", $queryStrings) . "}";
 		return $res;
 	}
 
 	protected function urlForGeopulse($tableName, $query) {
-		return $this->factHome."places/geopulse?" . $query->toUrlQuery();
+		return $this->factHome . "places/geopulse?" . $query->toUrlQuery();
 	}
 
-	  protected function urlForMonetize($tableName,$query) {
-	    return $this->factHome.$tableName."/monetize?" . $query->toUrlQuery();
-	  }
+	protected function urlForMonetize($tableName, $query) {
+		return $this->factHome . $tableName . "/monetize?" . $query->toUrlQuery();
+	}
 
-	 protected function urlForGeocode($tableName,$query) {
-	   return $this->factHome.$tableName."/geocode?" . $query->toUrlQuery();
-	 }
+	protected function urlForGeocode($tableName, $query) {
+		return $this->factHome . $tableName . "/geocode?" . $query->toUrlQuery();
+	}
 
- /**
-   * Reverse geocodes by returning a response containing the address nearest a given point.
-   * @param obj point The point for which the nearest address is returned
-   * @param string tableName Optional. The tablenae to geocode against.  Currently only 'places' is supported.
-   * @return the response of running a reverse geocode query for <tt>point</tt> against Factual.
-   */
-  public function factualReverseGeocode($point,$tableName="places") {
-  	$query = new FactualQuery;
-  	$query->at($point);
-  	return new ReadResponse($this->request($this->urlForGeocode($tableName, $query)));
-  }
+	protected function urlForFlag($tableName, $factualID) {
+		return $this->factHome . "t/" . $tableName . "/" . $factualID . "/flag";
+	}
+
+	protected function urlForSubmit($tableName, $factualID) {
+		return $this->factHome . "t/" . $tableName . "/" . $factualID . "submit";
+	}
+	/**
+	   * Flags entties as problematic
+	   * @param object FactualFlagger object
+	   * @param array vars Optional vars to send with information on this request. Array keys "comment", "debug", "reference"   * @return the response from flagging
+	   */
+	public function flag($flagger) {
+		//check parameter type
+		if (!$flagger instanceof FactualFlagger) {
+			throw new Exception("FactualFlagger object required as parameter of ".__METHOD__);
+			return false;
+		}
+		//check that flaggger has required attributes set
+		if (!$flagger->isValid()) {
+			throw new Exception("FactualFlagger object must have userToken, tableName, and factualID set");
+			return false;
+		}
+		return new ReadResponse($this->request($this->urlForFlag($flagger->getTableName(), $flagger->getFactualID()), "POST", $flagger->toUrlParams()));
+	}
+
+	/**
+	 * Runs a <tt>submit</tt> input against the specified Factual table.
+	 * @param string tableName The name of the table you wish to submit updates for (e.g. "places")
+	 * @param string factualID The Factual ID on which the submit is run
+	 * @param ??? submit The submit parameters to run against <tt>table</tt>
+	 * @param array vars Vars to send with information on this request. Array keys "user" (req.), "comment", "debug", "reference"
+	 * @return the response of running <tt>submit</tt> against Factual.
+	 */
+	public function submit($tableName, $factualID, $submit, $vars) {
+		return $this->submitCustom($this->urlForSubmit($tableName, $factualID), $submit, $vars);
+	}
+
+	protected function submitCustom($root, $submit, $vars) {
+		/*
+		   Metadata metadata) {
+		 Map<String, Object> params = Maps.newHashMap();
+		 // TODO: Switch parameters to POST content when supported.
+		 params.putAll(metadata.toUrlParams());
+		 params.putAll(submit.toUrlParams());
+		 String jsonResponse = post(root, params);
+		 return new SubmitResponse(jsonResponse);
+		 */
+	}
+
+	/**
+	  * Reverse geocodes by returning a response containing the address nearest a given point.
+	  * @param obj point The point for which the nearest address is returned
+	  * @param string tableName Optional. The tablenae to geocode against.  Currently only 'places' is supported.
+	  * @return the response of running a reverse geocode query for <tt>point</tt> against Factual.
+	  */
+	public function factualReverseGeocode($point, $tableName = "places") {
+		$query = new FactualQuery;
+		$query->at($point);
+		return new ReadResponse($this->request($this->urlForGeocode($tableName, $query)));
+	}
 
 	/**
 	 * Queue a request for inclusion in a multi request.
@@ -248,15 +306,14 @@ class Factual {
 		return new MultiResponse($this->request($res['url']), $res['response']);
 	}
 
-
-  /**
-   * Runs a monetize <tt>query</tt> against the specified Factual table.
-   * @param query The query to run against monetize.
-   * @return the response of running <tt>query</tt> against Factual.
-   */
-  public function monetize($tableName,$query) {
- 	return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
-  }
+	/**
+	 * Runs a monetize <tt>query</tt> against the specified Factual table.
+	 * @param query The query to run against monetize.
+	 * @return the response of running <tt>query</tt> against Factual.
+	 */
+	public function monetize($tableName, $query) {
+		return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
+	}
 
 	/**
 	 * Signs a 'raw' request (a complete query) and returns the JSON results
@@ -274,25 +331,32 @@ class Factual {
 	 * @param string urlStr unsigned URL request
 	 * @return array ex: array ('code'=>int, 'headers'=>array(), 'body'=>string)
 	 */
-	protected function request($urlStr) {
-		$requestMethod = "GET";
-		$params = null;
-		$customHeaders[CURLOPT_HTTPHEADER] = array (
-			"X-Factual-Lib: " . $this->config['factual']['driverversion']
-		); //custom header
+	protected function request($urlStr, $requestMethod = "GET", $params = null) {
+		//custom headers
+		$customHeaders[CURLOPT_HTTPHEADER] = array ();
+		$customHeaders[CURLOPT_HTTPHEADER][] = "X-Factual-Lib: " . $this->config['factual']['driverversion'];
+		if ($requestMethod == "POST") {
+			$customHeaders[CURLOPT_HTTPHEADER][] = "Content-Type: " . "application/x-www-form-urlencoded";
+		}
 		// Build request with OAuth request params
 		$request = new OAuthRequester($urlStr, $requestMethod, $params);
+
+		//check & flag debug
+		if ($this->debug == true) {
+			$request->debug = true; //set debug on oauth request object for curl output
+		}
+
 		//Make request
 		try {
-	    	$result = $request->doRequest(0, $customHeaders);
+			$result = $request->doRequest(0, $customHeaders);
 		} catch (Exception $e) {
 			//catch client exception
-		    $info['request'] = $urlStr;
+			$info['request'] = $urlStr;
 			$info['driver'] = $this->config['factual']['driverversion'];
-		    $info['method'] = $requestMethod;
-		    $info['message'] = "Service exception (likely a problem on the server side). Client did not connect and returned '".$e->getMessage()."'";
-		    $factualE = new FactualApiException($info);
-		    throw $factualE;
+			$info['method'] = $requestMethod;
+			$info['message'] = "Service exception (likely a problem on the server side). Client did not connect and returned '" . $e->getMessage() . "'";
+			$factualE = new FactualApiException($info);
+			throw $factualE;
 		}
 		$result['request'] = $urlStr; //pass request string onto response
 		$result['tablename'] = $this->lastTable; //pass table name to result object (not available with rawGet())
@@ -306,7 +370,7 @@ class Factual {
 			$info['error_type'] = $body['error_type'];
 			$info['message'] = $body['message'];
 			$info['request'] = $result['request'];
-			$info['headers'] = $result['headers'];
+			$info['returnheaders'] = $result['headers'];
 			$info['driver'] = $this->config['factual']['driverversion'];
 			if (!empty ($result['tablename'])) {
 				$info['tablename'] = $result['tablename'];
@@ -332,12 +396,12 @@ class Factual {
 	 * Called by spl_autoload_register() to avoid conflicts with autoload() methods from other libs
 	 */
 	public static function factualAutoload($className) {
-        $filename = dirname(__FILE__)."/".$className . ".php";
-        // don't interfere with other classloaders
-        if(!file_exists($filename)) {
-            return;
-        }
-        include $filename;
+		$filename = dirname(__FILE__) . "/" . $className . ".php";
+		// don't interfere with other classloaders
+		if (!file_exists($filename)) {
+			return;
+		}
+		include $filename;
 	}
 
 	//The following methods are included as handy convenience; unsupported and experimental
