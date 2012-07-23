@@ -440,6 +440,11 @@ class OAuthRequester extends OAuthRequestSigner
 			$data .= "\n\n".$query;
 		}
 
+		//TB: Write POST Body information for debug
+		if ($this->debug){
+			file_put_contents('php://stderr', "POST Body: ".$query."\n");
+		}
+
 		OAuthRequestLogger::setSent($data, $body);
 		OAuthRequestLogger::setReceived($txt);
 
