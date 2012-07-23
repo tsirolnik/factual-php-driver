@@ -224,13 +224,17 @@ class Factual {
 		return $this->factHome . "t/" . $tableName . "/" . $factualID . "/flag";
 	}
 
-	protected function urlForSubmit($tableName, $factualID) {
-		return $this->factHome . "t/" . $tableName . "/" . $factualID . "submit";
+	protected function urlForSubmit($tableName, $factualID=null) {
+		if ($factualID){
+			return $this->factHome . "t/" . $tableName . "/" . $factualID . "/submit";
+		} else {
+			return $this->factHome . "t/" . $tableName . "/submit";			
+		}
 	}
 	/**
 	   * Flags entties as problematic
 	   * @param object FactualFlagger object
-	   * @param array vars Optional vars to send with information on this request. Array keys "comment", "debug", "reference"   * @return the response from flagging
+	   * @return object Flag Response object
 	   */
 	public function flag($flagger) {
 		//check parameter type
@@ -247,27 +251,22 @@ class Factual {
 	}
 
 	/**
-	 * Runs a <tt>submit</tt> input against the specified Factual table.
-	 * @param string tableName The name of the table you wish to submit updates for (e.g. "places")
-	 * @param string factualID The Factual ID on which the submit is run
-	 * @param ??? submit The submit parameters to run against <tt>table</tt>
-	 * @param array vars Vars to send with information on this request. Array keys "user" (req.), "comment", "debug", "reference"
-	 * @return the response of running <tt>submit</tt> against Factual.
-	 */
-	public function submit($tableName, $factualID, $submit, $vars) {
-		return $this->submitCustom($this->urlForSubmit($tableName, $factualID), $submit, $vars);
-	}
-
-	protected function submitCustom($root, $submit, $vars) {
-		/*
-		   Metadata metadata) {
-		 Map<String, Object> params = Maps.newHashMap();
-		 // TODO: Switch parameters to POST content when supported.
-		 params.putAll(metadata.toUrlParams());
-		 params.putAll(submit.toUrlParams());
-		 String jsonResponse = post(root, params);
-		 return new SubmitResponse(jsonResponse);
-		 */
+	   * Flags entties as problematic
+	   * @param object FactualFlagger object
+	   * @return object Submit Response object
+	   */	
+	public function submit($submittor){
+		//check parameter type
+		if (!$submittor instanceof FactualSubmittor) {
+			throw new Exception("FactualSubmittor object required as parameter of ".__METHOD__);
+			return false;
+		}	
+		//check that object has required attributes set
+		if (!$submittor->isValid()) {
+			throw new Exception("FactualSubmittor object must have userToken, tableName set");
+			return false;
+		}			
+		return new ReadResponse($this->request($this->urlForSubmit($submittor->getTableName(), $submittor->getFactualID()), "POST", $submittor->toUrlParams()));		
 	}
 
 	/**
@@ -340,12 +339,10 @@ class Factual {
 		}
 		// Build request with OAuth request params
 		$request = new OAuthRequester($urlStr, $requestMethod, $params);
-
 		//check & flag debug
-		if ($this->debug == true) {
+		if ($this->debug) {
 			$request->debug = true; //set debug on oauth request object for curl output
 		}
-
 		//Make request
 		try {
 			$result = $request->doRequest(0, $customHeaders);
@@ -376,8 +373,21 @@ class Factual {
 				$info['tablename'] = $result['tablename'];
 			}
 			$info['method'] = $requestMethod;
+			//show post body
+			if ($params){
+				$info['body'] = $params;	
+				//decoded
+				foreach ($params as $key => $value){
+					$info['bodyunencoded'][$key] = rawurldecode ($value);
+				}
+			}
 			//chuck exception
 			$factualE = new FactualApiException($info);
+			//echo headers if debug mode on
+			if ($this->debug) {
+				$info = array_filter($info); //remove empty elements for readability
+				print_r($info);
+			}
 			throw $factualE;
 		}
 		return $result;
