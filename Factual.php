@@ -95,11 +95,12 @@ class Factual {
 	 * @param string table Table name
 	 * @param object query Query Object
 	 * @deprecated 1.4.3 - Jul 8, 2012
-	 */
+	
 	public function crosswalks($table, $query) {
 		return $this->fetch($table, $query)->getCrosswalks();
 	}
-
+ 	*/
+ 	
 	/**
 	 * Factual Fetch Abstraction
 	 * @param string tableName The name of the table you wish to query (e.g., "places")
