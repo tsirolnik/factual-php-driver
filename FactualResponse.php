@@ -1,7 +1,6 @@
 <?php
 /**
- * Represents the basic concept of a response from Factual.
- * This is a refactoring of the Factual Driver by Aaron: https://github.com/Factual/factual-java-driver
+ * Basic response from Factual API
  * @author Tyler
  * @package Factual
  * @license Apache 2.0
@@ -11,12 +10,8 @@ abstract class FactualResponse {
   protected $objects = array(); 
   protected $version = null; //string
   protected $status = null; //string
-  protected $totalRowCount = null; //int
-  protected $includedRows = null; //int
-  protected $data = array();
   protected $json;
   protected $tableName = null; //table getting queried
-  protected $countTotal = null;
   protected $responseHeaders = array();
   protected $responseCode = null;
   protected $request = null;
@@ -80,9 +75,6 @@ abstract class FactualResponse {
 	protected function parseJSON($json){
 		//assign data value
     	$rootJSON = json_decode($json,true);
-    	if (isset($rootJSON['response']['data'])){
-    		$this->data = $rootJSON['response']['data'];
-    	}
     	//assign status value
     	$this->status = $rootJSON['status'];
     	//assign version
@@ -94,6 +86,10 @@ abstract class FactualResponse {
     	if(isset($rootJSON['response']['included_rows'])){
     		$this->includedRows = $rootJSON['response']['included_rows'];
     	}    	
+    	//assign data
+    	if (isset($rootJSON['response']['data'])){
+    		$this->data = $rootJSON['response']['data'];
+    	}
     	return $rootJSON;	
 	}
 
@@ -130,22 +126,6 @@ abstract class FactualResponse {
    */
   public function getVersion() {
     return $this->version;
-  }
-
-  /**
-   * Get count of all entities meeting query criteria, or null if unknown.
-   * @return int | null
-   */
-  public function getTotalRowCount() {
-    return $this->totalRowCount;
-  }
-
-  /**
-   * Get count of result rows returned in this response.
-   * @return int 
-   */
-  public function getIncludedRowCount() {
-    return $this->includedRows;
   }
 
   /**
@@ -241,22 +221,6 @@ abstract class FactualResponse {
   public function getCode(){
   	return $this->responseCode;
   }    
-  
-   /*
-  * Results as array of objects
-  * @param string type Entity type: FactualPlace, Crosswalk
-  * @return array Array of objects
 
-	public function getObjects($type){
-		if (is_array($this->data)){
-			foreach ($this->data as $entity){
-				$this->objects[] = new $type($entity);
-			}
-			return $this->objects;
-		} else {
-			return array();
-		}
-	}
-  */
 }
 ?>

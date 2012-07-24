@@ -8,7 +8,7 @@
  * @package Factual
  * @license Apache 2.0
  */
-class ResolveResponse extends ReadResponse {
+class ResolveResponse extends FactualResponse {
 
 	/**
 	 * Checks whether query was resolved
@@ -30,19 +30,7 @@ class ResolveResponse extends ReadResponse {
 		}
 	}
 
-	/*
-	 * Gets resolved entity as object (experimental)
-	 * @return array | false on no resolution
-	 
-	public function getResolvedAsObject() {
-		if ($this->isResolved() && $this->entityType) {
-			$objectType = $this->entityType;
-			return new $objectType ($this->data[0]);
-		} else {
-			return null;
-		}
-	}
-*/
+
 
 }
 ?>
