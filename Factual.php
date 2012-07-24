@@ -245,10 +245,10 @@ class Factual {
 		}
 		//check that flaggger has required attributes set
 		if (!$flagger->isValid()) {
-			throw new Exception("FactualFlagger object must have userToken, tableName, and factualID set");
+			throw new Exception("Parameter must have userToken, tableName, and factualID set");
 			return false;
 		}
-		return new ReadResponse($this->request($this->urlForFlag($flagger->getTableName(), $flagger->getFactualID()), "POST", $flagger->toUrlParams()));
+		return new FlagResponse($this->request($this->urlForFlag($flagger->getTableName(), $flagger->getFactualID()), "POST", $flagger->toUrlParams()));
 	}
 
 	/**
@@ -264,7 +264,7 @@ class Factual {
 		}	
 		//check that object has required attributes set
 		if (!$submittor->isValid()) {
-			throw new Exception("FactualSubmittor object must have userToken, tableName set");
+			throw new Exception("Parameter must have userToken, tableName, values set");
 			return false;
 		}			
 		return new ReadResponse($this->request($this->urlForSubmit($submittor->getTableName(), $submittor->getFactualID()), "POST", $submittor->toUrlParams()));		
@@ -377,17 +377,13 @@ class Factual {
 			//show post body
 			if ($params){
 				$info['body'] = $params;	
-				//decoded
-				foreach ($params as $key => $value){
-					$info['bodyunencoded'][$key] = rawurldecode ($value);
-				}
 			}
 			//chuck exception
 			$factualE = new FactualApiException($info);
-			//echo headers if debug mode on
+			//write debug info to stderr if debug mode on
 			if ($this->debug) {
 				$info = array_filter($info); //remove empty elements for readability
-				print_r($info);
+				file_put_contents('php://stderr', "Debug ".print_r($info,true));
 			}
 			throw $factualE;
 		}
