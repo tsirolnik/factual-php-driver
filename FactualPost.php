@@ -6,6 +6,7 @@
  * @license Apache 2.0
  */
  class FactualPost{
+ 	
 	//Required Params
 	public $tableName = null; //The name of the table in which the entites is found you wish to flag (e.g. "places")
 	public $factualID = null; //The Factual ID
@@ -45,6 +46,7 @@
  	 	
  	/**
  	 * Returns key/value pairs. JSON-encodes any arrays
+ 	 * @internal we'd usually do a reawurlencode() here. Note however that the oauth lib performs this function.
  	 */
  	public function toUrlParams(){
  		$params = $this->getPostVars();
@@ -55,7 +57,7 @@
  				if (is_array($val)){ //json encode arrays
  					$val = json_encode($val);
  				}
- 				$temp[$var] = rawurlencode($val); //raw encode
+ 				$temp[$var] = $val;
  			}
  		}  		 		
  		return $temp;		
@@ -91,6 +93,5 @@
 
  	
  }
- 
  
 ?>
