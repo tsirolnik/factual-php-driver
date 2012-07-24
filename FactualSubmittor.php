@@ -34,7 +34,7 @@
  	 * @return bool
  	 */
  	public function isValid(){
- 		if (empty($this->tableName)| empty($this->factualID)|empty($this->user)|empty($this->values)){
+ 		if (empty($this->tableName)| empty($this->user)|empty($this->values)){
  			return false;
  		} else {
  			return true;
