@@ -79,6 +79,7 @@ abstract class FactualResponse {
     	$this->status = $rootJSON['status'];
     	//assign version
     	$this->version = $rootJSON['version'];
+    	/*
     	//assign total row count
     	if(isset($rootJSON['response']['total_row_count'])){
     		$this->countTotal = $rootJSON['response']['total_row_count'];
@@ -90,6 +91,7 @@ abstract class FactualResponse {
     	if (isset($rootJSON['response']['data'])){
     		$this->data = $rootJSON['response']['data'];
     	}
+    	*/
     	return $rootJSON;	
 	}
 

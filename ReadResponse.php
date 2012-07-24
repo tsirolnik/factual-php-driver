@@ -28,7 +28,7 @@ class ReadResponse extends FactualResponse {
     	}
     	if(isset($rootJSON['response']['included_rows'])){
     		$this->includedRows = $rootJSON['response']['included_rows'];
-    	}    	
+    	}	
     	//assign data
     	if (isset($rootJSON['response']['data'])){
     		$this->data = $rootJSON['response']['data'];
