@@ -348,7 +348,9 @@ class Factual {
 		}
 		//Make request
 		try {
+			$callStart = microtime(true);
 			$result = $request->doRequest(0, $customHeaders);
+			$callEnd = microtime(true);
 		} catch (Exception $e) {
 			//catch client exception
 			$info['request'] = $urlStr;
@@ -378,6 +380,8 @@ class Factual {
 			if ($params) {
 				$info['body'] = $params;
 			}
+			//add execution time
+			$info['time'] = $callEnd - $callStart;
 			//write debug info to stderr if debug mode on
 			if ($this->debug) {
 				$info = array_filter($info); //remove empty elements for readability
