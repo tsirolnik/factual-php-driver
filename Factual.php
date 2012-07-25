@@ -91,29 +91,16 @@ class Factual {
 	}
 
 	/**
-	 * Convenience method to return Crosswalks for the specific query.
-	 * @param string table Table name
-	 * @param object query Query Object
-	 * @deprecated 1.4.3 - Jul 8, 2012
-	
-	public function crosswalks($table, $query) {
-		return $this->fetch($table, $query)->getCrosswalks();
-	}
- 	*/
- 	
-	/**
 	 * Factual Fetch Abstraction
 	 * @param string tableName The name of the table you wish to query (e.g., "places")
 	 * @param obj query The query to run against <tt>table</tt>.
 	 * @return object ReadResponse object with result of running <tt>query</tt> against Factual.
 	 */
 	public function fetch($tableName, $query) {
+		$this->lastTable = $tableName; //assign table name to object for logging
 		switch (get_class($query)) {
 			case "FactualQuery" :
 				$res = new ReadResponse($this->request($this->urlForFetch($tableName, $query)));
-				break;
-			case "CrosswalkQuery" :
-				$res = new CrosswalkResponse($this->request($this->urlForCrosswalk($tableName, $query)));
 				break;
 			case "ResolveQuery" :
 				$res = new ResolveResponse($this->request($this->urlForResolve($tableName, $query)));
@@ -121,11 +108,27 @@ class Factual {
 			case "FacetQuery" :
 				$res = new ReadResponse($this->request($this->urlForFacets($tableName, $query)));
 				break;
+			case "DiffsQuery" :
+				//validate parameters
+				if (!$query->isValid()){
+					if ($query->getStartTime()){
+						throw new Exception("Start time (".$query->getStartTime().") must be earlier than end time (".$query->getEndTime().")");						
+					} else {
+						throw new Exception("Query must have start time set");
+					}
+					return false;					
+				}
+				//add metadata about this call to the response object
+				$apiResponse = $this->request($this->urlForDiffs($tableName, $query));
+				$apiResponse['diffsmeta']['start'] = $query->getStart();
+				$apiResponse['diffsmeta']['end'] = $query->getEnd();
+				$res = new DiffsResponse($apiResponse);
+				break;
 			default :
 				throw new Exception(__METHOD__ . " class type '" . get_class($query) . "' not recognized");
 				$res = false;
 		}
-		$this->lastTable = $tableName; //assign table name to object for logging
+		
 		return $res;
 	}
 
@@ -140,14 +143,14 @@ class Factual {
 			case "FactualQuery" :
 				$res = $this->urlForFetch($tableName, $query);
 				break;
-			case "CrosswalkQuery" :
-				$res = $this->urlForCrosswalk($tableName, $query);
-				break;
 			case "ResolveQuery" :
 				$res = $this->urlForResolve($tableName, $query);
 				break;
 			case "FacetQuery" :
 				$res = $this->urlForFacets($tableName, $query);
+				break;
+			case "DiffsQuery" :
+				$res = $this->urlForDiffs($tableName, $query);
 				break;
 			default :
 				throw new Exception(__METHOD__ . " class type '" . get_class($query) . "' not recognized");
@@ -182,10 +185,6 @@ class Factual {
 		return $this->factHome . "t/" . $tableName . "/schema";
 	}
 
-	protected function urlForCrosswalk($tableName, $query) {
-		return $this->factHome . $tableName . "/crosswalk?" . $query->toUrlQuery();
-	}
-
 	protected function urlForResolve($tableName, $query) {
 		return $this->factHome . $tableName . "/resolve?" . $query->toUrlQuery();
 	}
@@ -203,7 +202,7 @@ class Factual {
 		foreach ($this->fetchQueue as $index => $mQuery) {
 			$call = rawurlencode(substr($this->buildQuery($mQuery['table'], $mQuery['query']), $homeLen));
 			$queryStrings[] = "\"" . $index . "\":" . "\"" . $call . "\"";
-			$res['response'][] = $mQuery['query']->getResponseType();
+			$res['response'][$index] = $mQuery['query']->getResponseType();
 		}
 		$res['url'] = $this->factHome . "multi?queries={" . implode(",", $queryStrings) . "}";
 		return $res;
@@ -225,11 +224,15 @@ class Factual {
 		return $this->factHome . "t/" . $tableName . "/" . $factualID . "/flag";
 	}
 
-	protected function urlForSubmit($tableName, $factualID=null) {
-		if ($factualID){
+	protected function urlForDiffs($tableName, $query) {
+		return $this->factHome . "t/" . $tableName . "/diffs?" . $query->toUrlQuery();
+	}
+
+	protected function urlForSubmit($tableName, $factualID = null) {
+		if ($factualID) {
 			return $this->factHome . "t/" . $tableName . "/" . $factualID . "/submit";
 		} else {
-			return $this->factHome . "t/" . $tableName . "/submit";			
+			return $this->factHome . "t/" . $tableName . "/submit";
 		}
 	}
 	/**
@@ -240,7 +243,7 @@ class Factual {
 	public function flag($flagger) {
 		//check parameter type
 		if (!$flagger instanceof FactualFlagger) {
-			throw new Exception("FactualFlagger object required as parameter of ".__METHOD__);
+			throw new Exception("FactualFlagger object required as parameter of " . __METHOD__);
 			return false;
 		}
 		//check that flaggger has required attributes set
@@ -255,19 +258,19 @@ class Factual {
 	   * Flags entties as problematic
 	   * @param object FactualFlagger object
 	   * @return object Submit Response object
-	   */	
-	public function submit($submittor){
+	   */
+	public function submit($submittor) {
 		//check parameter type
 		if (!$submittor instanceof FactualSubmittor) {
-			throw new Exception("FactualSubmittor object required as parameter of ".__METHOD__);
+			throw new Exception("FactualSubmittor object required as parameter of " . __METHOD__);
 			return false;
-		}	
+		}
 		//check that object has required attributes set
 		if (!$submittor->isValid()) {
 			throw new Exception("Parameter must have userToken, tableName, values set");
 			return false;
-		}			
-		return new ReadResponse($this->request($this->urlForSubmit($submittor->getTableName(), $submittor->getFactualID()), "POST", $submittor->toUrlParams()));		
+		}
+		return new SubmitResponse($this->request($this->urlForSubmit($submittor->getTableName(), $submittor->getFactualID()), "POST", $submittor->toUrlParams()));
 	}
 
 	/**
@@ -284,7 +287,7 @@ class Factual {
 
 	/**
 	 * Queue a request for inclusion in a multi request.
-	 * @param string table The name of the table you wish to use crosswalk against (e.g., "places")
+	 * @param string table The name of the table you wish to query (e.g., "places")
 	 * @param obj query Query object to run against <tt>table</tt>.
 	 * @param string name Name of this query to help you distinguish return values
 	 */
@@ -301,7 +304,6 @@ class Factual {
 	  * @return response for a multi request
 	  */
 	public function multiFetch() {
-		//get response types required for multi objects
 		$res = $this->urlForMulti();
 		return new MultiResponse($this->request($res['url']), $res['response']);
 	}
@@ -358,34 +360,34 @@ class Factual {
 		}
 		$result['request'] = $urlStr; //pass request string onto response
 		$result['tablename'] = $this->lastTable; //pass table name to result object (not available with rawGet())
-		//catch server exception
-		if ($result['code'] >= 400) {
+		//catch server exception & load up on debug data
+		if ($result['code'] >= 400 | $this->debug) {
 			$body = json_decode($result['body'], true);
 			//get a boatload of debug data
 			$info['code'] = $result['code'];
 			$info['version'] = $body['version'];
 			$info['status'] = $body['status'];
-			$info['error_type'] = $body['error_type'];
-			$info['message'] = $body['message'];
-			$info['request'] = $result['request'];
 			$info['returnheaders'] = $result['headers'];
 			$info['driver'] = $this->config['factual']['driverversion'];
-			if (!empty ($result['tablename'])) {
-				$info['tablename'] = $result['tablename'];
-			}
 			$info['method'] = $requestMethod;
-			//show post body
-			if ($params){
-				$info['body'] = $params;	
+			if (isset($body['error_type'])){$info['error_type'] = $body['error_type'];}
+			if (isset($body['message'])){$info['message'] = $body['message'];}
+			if (isset($result['request'])){$info['request'] = $result['request'];}
+			if (isset($result['tablename'])){$info['tablename'] = $result['tablename'];}			
+			//add post body to debug
+			if ($params) {
+				$info['body'] = $params;
 			}
-			//chuck exception
-			$factualE = new FactualApiException($info);
 			//write debug info to stderr if debug mode on
 			if ($this->debug) {
 				$info = array_filter($info); //remove empty elements for readability
-				file_put_contents('php://stderr', "Debug ".print_r($info,true));
+				file_put_contents('php://stderr', "Debug " . print_r($info, true));
+			}			
+			//chuck exception
+			if ($result['code'] >= 400){
+				$factualE = new FactualApiException($info);
+				throw $factualE;
 			}
-			throw $factualE;
 		}
 		return $result;
 	}
