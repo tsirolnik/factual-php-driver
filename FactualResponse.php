@@ -5,9 +5,8 @@
  * @package Factual
  * @license Apache 2.0
  */
-abstract class FactualResponse {
+abstract class FactualResponse extends ArrayIterator {
 
-  protected $objects = array(); 
   protected $version = null; //string
   protected $status = null; //string
   protected $json;
@@ -31,16 +30,34 @@ abstract class FactualResponse {
   }
 
 	/**
-	 * Parses response from CURL
+	 * Parses the entire response from cURL, incl metadata
 	 * @param array apiResponse response from curl
 	 * @return void
 	 */
 	protected function parseResponse($apiResponse){
-		$this->parseJSON($apiResponse['body']);
+		if (isset($apiResponse['request'])){$this->request = $apiResponse['request'];}		
 		if (isset($apiResponse['tablename'])){$this->tableName = $apiResponse['tablename'];}
 		$this->responseHeaders = $apiResponse['headers'];
 		$this->responseCode = $apiResponse['code'];
-		if (isset($apiResponse['request'])){$this->request = $apiResponse['request'];}
+		$this->parseJSON($apiResponse['body']);
+	}
+
+	/**
+	 * Parses the server response from the API
+	 * @param string json JSON returned from API
+	 * @return array structured JSON
+	 */
+	protected function parseJSON($json){
+    	$rootJSON = json_decode($json,true);
+    	//assign status value
+    	$this->status = $rootJSON['status'];
+    	//assign version
+    	$this->version = $rootJSON['version'];
+    	
+    	//print_r($rootJSON);
+    	//exit;
+    	
+    	return $rootJSON;	
 	}
 
 	/**
@@ -65,34 +82,6 @@ abstract class FactualResponse {
 	 */
 	protected function getTableName(){
 		return $this->tableName;
-	}
-
-	/**
-	 * Parses JSON as array and assigns object values
-	 * @param string json JSON returned from API
-	 * @return array structured JSON
-	 */
-	protected function parseJSON($json){
-		//assign data value
-    	$rootJSON = json_decode($json,true);
-    	//assign status value
-    	$this->status = $rootJSON['status'];
-    	//assign version
-    	$this->version = $rootJSON['version'];
-    	/*
-    	//assign total row count
-    	if(isset($rootJSON['response']['total_row_count'])){
-    		$this->countTotal = $rootJSON['response']['total_row_count'];
-    	}
-    	if(isset($rootJSON['response']['included_rows'])){
-    		$this->includedRows = $rootJSON['response']['included_rows'];
-    	}    	
-    	//assign data
-    	if (isset($rootJSON['response']['data'])){
-    		$this->data = $rootJSON['response']['data'];
-    	}
-    	*/
-    	return $rootJSON;	
 	}
 
 	/**
@@ -131,39 +120,11 @@ abstract class FactualResponse {
   }
 
   /**
-   * Get the returned entities as an array 
-   * @return array
-   */
-  public function getData() {
-    return $this->data;
-  }
-
-  /**
-   * Get the return entities as JSON 
-   * @return the main data returned by Factual.
-   */
-  public function getDataAsJSON() {
-    	return json_encode($this->data);
-  }
-
-  /**
    * Gets count of elements returned in this page of result set (not total count)
    * @return int 
    */
   public function size() {
-	return $this->includedRows;  
-  }
-
-  /**
-   * Get the first data record or, null if no data was returned.
-   * @return array 
-   */
-  public function first() {
-    if(empty($this->data)) {
-      return null;
-    } else {
-      return $this->data[0];
-    }
+	return count($this);  
   }
 
   /**

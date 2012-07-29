@@ -1,7 +1,7 @@
 <?php
 
 /**
- * The response from running a FLag query
+ * The response from running a Flag query
  * @author Tyler
  * @package Factual
  * @license Apache 2.0
