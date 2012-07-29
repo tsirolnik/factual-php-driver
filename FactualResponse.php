@@ -53,10 +53,6 @@ abstract class FactualResponse extends ArrayIterator {
     	$this->status = $rootJSON['status'];
     	//assign version
     	$this->version = $rootJSON['version'];
-    	
-    	//print_r($rootJSON);
-    	//exit;
-    	
     	return $rootJSON;	
 	}
 

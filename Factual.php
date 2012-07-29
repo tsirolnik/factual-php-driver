@@ -74,6 +74,9 @@ class Factual {
 		}
 	}
 
+	/**
+	 * Turns on debugging for output ot stderr
+	 */
 	public function debug() {
 		$this->debug = true;
 	}
@@ -105,6 +108,9 @@ class Factual {
 			case "ResolveQuery" :
 				$res = new ResolveResponse($this->request($this->urlForResolve($tableName, $query)));
 				break;
+			case "MatchQuery" :
+				$res = new MatchResponse($this->request($this->urlForMatch($tableName, $query)));
+				break;				
 			case "FacetQuery" :
 				$res = new ReadResponse($this->request($this->urlForFacets($tableName, $query)));
 				break;
@@ -146,6 +152,9 @@ class Factual {
 			case "ResolveQuery" :
 				$res = $this->urlForResolve($tableName, $query);
 				break;
+			case "MatchQuery" :
+				$res = $this->urlForMatch($tableName, $query);
+				break;
 			case "FacetQuery" :
 				$res = $this->urlForFacets($tableName, $query);
 				break;
@@ -160,10 +169,10 @@ class Factual {
 	}
 
 	/**
-	 * Resolves and returns resolved entity or null (shortcut method -- experimental)
+	 * Resolves and returns resolved entity or null (shortcut method)
 	 * @param string tableName Table name
 	 * @param array vars Attributes of entity to be matched in key=>value pairs
-	 * @return array | null
+	 * @return object ResolveResponse
 	 */
 	public function resolve($tableName, $vars) {
 		$query = new ResolveQuery();
@@ -171,7 +180,21 @@ class Factual {
 			$query->add($key, $value);
 		}
 		$res = new ResolveResponse($this->request($this->urlForResolve($tableName, $query)));
-		return $res->getResolved();
+		return $res;
+	}
+
+	/**
+	 * Matches entity to Factual ID (shortcut method)
+	 * @param string tableName Table name
+	 * @param array vars Attributes of entity to be matched in key=>value pairs
+	 * @return object MatchResponse 
+	 */
+	public function match($tableName, $vars) {
+		$query = new MatchQuery();
+		foreach ($vars as $key => $value) {
+			$query->add($key, $value);
+		}
+		return new MatchResponse($this->request($this->urlForMatch($tableName, $query)));
 	}
 
 	/**
@@ -187,6 +210,10 @@ class Factual {
 
 	protected function urlForResolve($tableName, $query) {
 		return $this->factHome . $tableName . "/resolve?" . $query->toUrlQuery();
+	}
+
+	protected function urlForMatch($tableName, $query) {
+		return $this->factHome . $tableName . "/match?" . $query->toUrlQuery();
 	}
 
 	protected function urlForFetch($tableName, $query) {
@@ -255,7 +282,7 @@ class Factual {
 	}
 
 	/**
-	   * Flags entties as problematic
+	   * Flags entites as problematic
 	   * @param object FactualFlagger object
 	   * @return object Submit Response object
 	   */
@@ -317,14 +344,38 @@ class Factual {
 		return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
 	}
 
-	/**
-	 * Signs a 'raw' request (a complete query) and returns the JSON results
-	 * Note that this does not process the quey at all -- just signs and returns results
-	 * @param string urlStr unsigned URL request. Must be correctly escaped.
-	 * @return string JSON reponse
-	 */
-	public function rawGet($urlStr) {
+/**
+  * Runs a GET request against the specified endpoint path, using the given
+  * parameters and your OAuth credentials. Returns the raw response body
+  * returned by Factual. The necessary URL base will be automatically prepended to <tt>path</tt>. If 
+  * you need to change it, e.g. to make requests against a development instance of
+  * the Factual service, use Factual::setFactHome().
+  * @param string path The endpoint path to run the request against. example: "t/places"
+  * @param array params The query string parameters to send with the request. Escape, but do not encode, the values. 
+  * @return string JSON response body from the Factual API.
+  */
+	public function rawGet($path,$params) {
+		$queryString = $this->toQueryString($params);
+		$urlStr = $this->factHome.$path.$queryString;	
 		$res = $this->request($urlStr);
+		return $res['body'];
+	}
+
+/**
+  * Runs a GET request against the specified endpoint path, using the given
+  * parameters and your OAuth credentials. Returns the raw response body
+  * returned by Factual. The necessary URL base will be automatically prepended to <tt>path</tt>. If 
+  * you need to change it, e.g. to make requests against a development instance of
+  * the Factual service, use Factual::setFactHome().
+  * @param string path The endpoint path to run the request against. example: "t/places"
+  * @param array body key/value pairs of POST body. Escape, but do not encode.
+  * @param array params Optional Key/Value query string parameters to send with the request. Escape, but do not encode.
+  * @return string JSON response body from the Factual API.
+  */
+	public function rawPost($path,$body,$params=null) {
+		$queryString = $this->toQueryString($params);
+		$urlStr = $this->factHome.$path.$queryString;	
+		$res = $this->request($urlStr,"POST",$body);
 		return $res['body'];
 	}
 
@@ -394,6 +445,24 @@ class Factual {
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Converts and encodes parameter array to a query string
+	 * @return string
+	 */
+	protected function toQueryString($parameters){
+		if (count($parameters) > 0){
+			foreach ($parameters as $key => $value){
+				if (is_bool($value)){ //convert bool to string
+					$value = var_export($value, true);
+				}
+				$temp[] = $key."=".rawurlencode($value);	
+			}
+			return "?".implode("&", $temp);
+		} else {
+			return "";
+		}
 	}
 
 	/**
