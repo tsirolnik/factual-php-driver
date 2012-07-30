@@ -75,7 +75,7 @@ class Factual {
 	}
 
 	/**
-	 * Turns on debugging for output ot stderr
+	 * Turns on debugging for output to stderr
 	 */
 	public function debug() {
 		$this->debug = true;
@@ -316,10 +316,14 @@ class Factual {
 	 * Queue a request for inclusion in a multi request.
 	 * @param string table The name of the table you wish to query (e.g., "places")
 	 * @param obj query Query object to run against <tt>table</tt>.
-	 * @param string name Name of this query to help you distinguish return values
+	 * @param string handle Arbitrary name of this query used to distinguish return values
 	 */
-	public function multiQueue($table, $query, $name) {
-		$this->fetchQueue[$name] = array (
+	public function multiQueue($table, $query, $handle) {
+		if ($this->fetchQueue[$handle]){
+			throw new Exception("Query with handle '".$handle."' already exists in queue. Handles must be unique.");
+			return false;
+		}
+		$this->fetchQueue[$handle] = array (
 			'query' => $query,
 			'table' => $table
 		);
