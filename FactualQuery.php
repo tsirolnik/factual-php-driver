@@ -68,11 +68,21 @@ class FactualQuery {
 	/**
 	 * Sets the fields to select. This is optional; default behaviour is generally
 	 * to select all fields in the schema.
-	 * 
+	 * @param mixed fields Fields to select as comma-delineated string or array
+	 * @return this Query
+	 * @deprecated 1.5.0 - Jul 30, 2012 Use FactualQuery::select();
+	 */
+	public function only($fields) {
+		return $this->select($fields);
+	}
+
+	/**
+	 * Sets the fields to select. This is optional; default behaviour is generally
+	 * to select all fields in the schema.
 	 * @param mixed fields Fields to select as comma-delineated string or array
 	 * @return this Query
 	 */
-	public function only($fields) {
+	public function select($fields) {
 		if (is_array($fields)) {
 			$fields = implode(",", $fields);
 		}
@@ -80,7 +90,7 @@ class FactualQuery {
 	}
 
 	/**
-	 * @return array of select fields set by only(), null if none.
+	 * @return array of select fields set by select(), null if none.
 	 */
 	public function getSelectFields() {
 		return $this->selectFields;
