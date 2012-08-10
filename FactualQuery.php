@@ -245,6 +245,9 @@ class FactualQuery {
 		$temp['geo'] = $this->geoBoundsJsonOrNull();
 		$temp = array_filter($temp); //remove nulls		
 
+		//initialize
+		$temp2 = array();
+
 		//encode (cannot use http_build_query() as we need to *raw* encode adn this not provided until PHP v5.4)
 		foreach ($temp as $key => $value){
 			$temp2[] = $key."=".rawurlencode($value);		

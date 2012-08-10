@@ -217,7 +217,10 @@ class Factual {
 	}
 
 	protected function urlForFetch($tableName, $query) {
-		return $this->factHome . "t/" . $tableName . "?" . $query->toUrlQuery();
+		if (!stripos("$tableName","/")){
+			$tableName = "t/" . $tableName; //do not assume raw table if path is added
+		}
+		return $this->factHome . $tableName . "?" . $query->toUrlQuery();
 	}
 
 	protected function urlForFacets($tableName, $query) {
@@ -236,7 +239,7 @@ class Factual {
 	}
 
 	protected function urlForGeopulse($tableName, $query) {
-		return $this->factHome . "places/geopulse?" . $query->toUrlQuery();
+		return $this->factHome . $tableName."/geopulse?" . $query->toUrlQuery();
 	}
 
 	protected function urlForMonetize($tableName, $query) {
@@ -319,7 +322,7 @@ class Factual {
 	 * @param string handle Arbitrary name of this query used to distinguish return values
 	 */
 	public function multiQueue($table, $query, $handle) {
-		if ($this->fetchQueue[$handle]){
+		if (isset($this->fetchQueue[$handle])){
 			throw new Exception("Query with handle '".$handle."' already exists in queue. Handles must be unique.");
 			return false;
 		}
@@ -346,6 +349,15 @@ class Factual {
 	 */
 	public function monetize($tableName, $query) {
 		return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
+	}
+
+	/**
+	 * Runs a geopulse <tt>query</tt>
+	 * @param query The FactualQuery object
+	 * @return object The ReadResponse object
+	 */
+	public function geopulse($tableName, $query) {
+		return new ReadResponse($this->request($this->urlForGeopulse($tableName, $query)));
 	}
 
 /**
