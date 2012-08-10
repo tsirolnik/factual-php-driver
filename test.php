@@ -16,8 +16,8 @@ error_reporting (E_ERROR);
 
 //check that key/secret are populated
 if (!$key || !$secret){
-	echo "Add your key and secret to test.php before running\n";
-	echo "See https://github.com/Factual/factual-php-driver#testing for more info\n";
+	echo "Add your key and secret to test.php before running this script\n";
+	echo "See https://github.com/Factual/factual-php-driver/wiki/Getting-Started for more info\n";
 	exit;
 }
 
