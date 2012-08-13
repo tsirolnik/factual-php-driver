@@ -8,9 +8,8 @@
  * @author tyler
  */
 class FacetQuery extends FactualQuery {
-	const RESPONSETYPE = "FacetResponse";
+	const RESPONSETYPE = "ReadResponse";
 	
-
   /**
    * Constructor.
    * @param string fields fields for which facets will be generated

@@ -108,6 +108,9 @@ class Factual {
 			case "ResolveQuery" :
 				$res = new ResolveResponse($this->request($this->urlForResolve($tableName, $query)));
 				break;
+			case "FacetQuery" :
+				$res = new ReadResponse($this->request($this->urlForFacets($tableName, $query)));
+				break;
 			case "MatchQuery" :
 				$res = new MatchResponse($this->request($this->urlForMatch($tableName, $query)));
 				break;				
@@ -223,7 +226,7 @@ class Factual {
 		return $this->factHome . $tableName . "?" . $query->toUrlQuery();
 	}
 
-	protected function urlForFacets($tableName, $query) {
+	protected function urlForFacets($tableName, $query) {		
 		return $this->factHome . "t/" . $tableName . "/facets?" . $query->toUrlQuery();
 	}
 
