@@ -38,8 +38,8 @@ class ReadResponse extends FactualResponse {
 	protected function assignData($data){
 		if ($data){
 		//assign data to iterator
-    		foreach ($data as $datum){
-    			$this[] = $datum;
+    		foreach ($data as $index => $datum){
+    			$this[$index] = $datum;
     		}
     	}
 	}
