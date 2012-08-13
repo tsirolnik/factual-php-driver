@@ -14,6 +14,7 @@
  * Moved documentation to [GitHub Wiki](https://github.com/Factual/factual-php-driver/wiki) from readme.md
  * Factual::resolve() shortcut formally supported; now returns ResolveResponse
  * Deprecated FactualQuery::only() for FactualQuery::select() for consistency with API parameter names
+ * ReadResponse and descendant objects now preserve index of data
  * Published this Changelog
  
 ## 1.4.3
