@@ -20,7 +20,7 @@ class ReadResponse extends FactualResponse {
 		$rootJSON = parent::parseJSON($json);
     	//assign total row count
     	if(isset($rootJSON['response']['total_row_count'])){
-    		$this->countTotal = $rootJSON['response']['total_row_count'];
+    		$this->totalRowCount = $rootJSON['response']['total_row_count'];
     	}
     	if(isset($rootJSON['response']['included_rows'])){
     		$this->includedRows = $rootJSON['response']['included_rows'];
