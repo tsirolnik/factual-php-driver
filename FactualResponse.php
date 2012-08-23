@@ -124,14 +124,6 @@ abstract class FactualResponse extends ArrayIterator {
   }
 
   /**
-   * Get total result count. Must be specifically requested via Query::includeRowCount()
-   * @return int | null
-   */
-  public function getRowCount() {
-    return $this->countTotal;
-  }
-
-  /**
    * Checks whether data was returned by Factual server.  True if Factual's 
    * response did not include any results records for the query, false otherwise.
    * @return bool

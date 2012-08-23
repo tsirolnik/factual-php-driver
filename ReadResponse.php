@@ -61,11 +61,19 @@ class ReadResponse extends FactualResponse {
   }
 
 	/**
-   * Get count of all entities meeting query criteria, or null if unknown.
+   * Get total result count. Must be specifically requested via Query::includeRowCount()
    * @return int | null
    */
   public function getTotalRowCount() {
     return $this->totalRowCount;
+  }
+
+  /**
+	* Alias of getTotalRowCount()
+   * @return int | null
+   */
+  public function getRowCount() {
+    return $this->getTotalRowCount();
   }
 
   /**
