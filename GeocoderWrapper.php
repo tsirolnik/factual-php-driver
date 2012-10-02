@@ -17,6 +17,7 @@ class GeocoderWrapper {
 	protected $lastQuery = 0; //timestamp of last web query, used to control calls-per-second 	 
 	protected $webServiceWait = 5; //webservice wait between calls in seconds (0 = no wait)
 	protected $checkServiceStatus = true; //checks status of service if no results received (prevents hammering)
+	protected $diagnostics = false; //returns diagnostics (debug) info
 
 	/**
 	 * Sets whether YQL return vars are checked for exceeding service limit (default = true)
@@ -57,6 +58,10 @@ class GeocoderWrapper {
 		}
 		//hit geocode service
 		$res = $this->query($q);
+		//return diagnostics
+		if ($this->diagnostics){
+			return $res->query;
+		}
 		if (!$res) {
 			return false;
 		}
@@ -117,6 +122,10 @@ class GeocoderWrapper {
 		}
 	}
 
+	public function diagnostics(){
+		$this->diagnostics = true;
+	}
+
 	/**
 	 * Assembles and runs YQL Query
 	 * @param string qString Query string
@@ -128,10 +137,13 @@ class GeocoderWrapper {
 			$this->logMsg(__METHOD__ . " No query string passed to YQL");
 			return false;
 		}
-		//build variable array
-		$aVars = array (
-			'format' => 'json'
-		);
+		$aVars = array();
+		//asign return format
+		$aVars['format'] = 'json';
+		//diagnostics switch
+		if ($this->diagnostics){
+			$aVars['diagnostics'] = 'true';
+		}
 		//add variables from parameter
 		if ($aUserVars && is_array($aUserVars)) {
 			$aVars = array_merge($aVars, $aUserVars);
@@ -147,6 +159,12 @@ class GeocoderWrapper {
 		$sData = implode("&", $aVarComb);
 		unset ($aVarComb);
 		$endPoint = $this->endPoint . "?q=" . urlencode($qString) . "&" . $sData;
+		
+		/*
+		print_r($qString);
+		print_r($endPoint);
+		*/
+		
 		$this->webserviceWait(); //pause as required before calling webservice again
 		$http_response_header = array();
 		@ $result = file_get_contents($endPoint);

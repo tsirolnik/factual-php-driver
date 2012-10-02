@@ -526,6 +526,12 @@ class Factual {
 		return $this->getGeocoder()->reversegeocode($lon, $lat);
 	}
 
+	public function geocoderDiagnostics(){
+		$this->getGeocoder();
+		$this->geocoder->diagnostics();
+		return true;
+	}
+
 	/**
 	* Geocodes address string or placename
 	* @param string q 
