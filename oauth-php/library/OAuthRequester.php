@@ -38,6 +38,7 @@ class OAuthRequester extends OAuthRequestSigner
 {
 	protected $files;
 	public $debug = false; //TB: added flag for curl strerr output
+	public $curlInfo = array(); //TB: added to expose curl debug information
 
 	/**
 	 * Construct a new request signer.  Perform the request with the doRequest() method below.
@@ -417,6 +418,12 @@ class OAuthRequester extends OAuthRequestSigner
 		}
 
 		$txt = curl_exec($ch);
+
+		//TB: add information for debug
+		if ($this->debug){
+			$this->curlInfo = curl_getinfo ($ch);
+		}		
+		
 		if ($txt === false) {
 			$error = curl_error($ch);
 			curl_close($ch);
