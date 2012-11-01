@@ -291,6 +291,7 @@ class FactualTest {
 		}
 		$this->testVersion();
 		$this->classConflicts();
+		$this->test_parse_ini();		
 		$this->testExt();
 		$this->testEncoding();
 		$this->testConnect();
@@ -334,6 +335,14 @@ class FactualTest {
 			$this->msg("HTML Encoding", true);
 		} else {
 			$this->msg("HTML Encoding", false);
+		}
+	}
+
+	private function test_parse_ini(){
+		if (function_exists ("parse_ini_file")){
+			$this->msg("Parse INI File Function", true);
+		} else {
+			$this->msg("Parse INI File Function", false);
 		}
 	}
 
@@ -505,18 +514,24 @@ class FactualTest {
 	}
 	
 	private function testMultiFilter(){
+		
+		//lc test strings only
+		$name = "starbucks";
+		$region = "ca";
+		$country = "us";
+		
 		$query = new FactualQuery;	
 	 $query->_and(array(
-       	$query->field("name")->equal("Starbucks"),
-  	   $query->field("region")->equal("CA"),
-  	   $query->field("country")->equal("US")
+       	$query->field("name")->equal($name),
+  	   $query->field("region")->equal($region),
+  	   $query->field("country")->equal($country)
   	   )
 	);
 	$query->limit(1);
 	$res = $this->factual->fetch($this->testTables['global'], $query);
 	$record = $res->getData();
 	$record = $record[0];
-	if ($record['name'] == "Starbucks" && $record['region'] == "CA" && $record['country'] == "US") {
+	if (strtolower($record['name']) == $name && strtolower($record['region']) == $region && strtolower($record['country']) == $country) {
 			$this->msg("Multi Filter", true);
 		} else {
 			$this->msg("Multi Filter", false);

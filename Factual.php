@@ -28,6 +28,8 @@ class Factual {
 	protected $lastTable = null; //last table queried
 	protected $fetchQueue = array (); //array of queries teed up for multi
 	protected $debug = false; //debug flag
+	protected $curlTimeout = 0; //maximum number of seconds for the network function to execute (0 = no timeout)
+	protected $connectTimeout = 2; //maximum number of seconds to connect to the server (0 = no timeout)
 
 	/**
 	 * Constructor. Creates authenticated access to Factual.
@@ -405,11 +407,14 @@ class Factual {
 	 */
 	protected function request($urlStr, $requestMethod = "GET", $params = null) {
 		//custom headers
-		$customHeaders[CURLOPT_HTTPHEADER] = array ();
-		$customHeaders[CURLOPT_HTTPHEADER][] = "X-Factual-Lib: " . $this->config['factual']['driverversion'];
+		$curlOptions[CURLOPT_HTTPHEADER] = array ();
+		$curlOptions[CURLOPT_HTTPHEADER][] = "X-Factual-Lib: " . $this->config['factual']['driverversion'];
 		if ($requestMethod == "POST") {
-			$customHeaders[CURLOPT_HTTPHEADER][] = "Content-Type: " . "application/x-www-form-urlencoded";
+			$curlOptions[CURLOPT_HTTPHEADER][] = "Content-Type: " . "application/x-www-form-urlencoded";
 		}
+		//other curl options
+		$curlOptions[CURLOPT_CONNECTTIMEOUT] = $this->connectTimeout; //connection timeout
+		$curlOptions[CURLOPT_TIMEOUT] = $this->curlTimeout; //execution timeout
 		// Build request with OAuth request params
 		$request = new OAuthRequester($urlStr, $requestMethod, $params);
 		//check & flag debug
@@ -419,7 +424,7 @@ class Factual {
 		//Make request
 		try {
 			$callStart = microtime(true);
-			$result = $request->doRequest(0, $customHeaders);
+			$result = $request->doRequest(0, $curlOptions);
 			$callEnd = microtime(true);
 		} catch (Exception $e) {
 			//catch client exception
@@ -454,6 +459,16 @@ class Factual {
 			$info['time'] = $callEnd - $callStart;
 			//write debug info to stderr if debug mode on
 			if ($this->debug) {
+				//add only select curl debug information
+				unset($request->curlInfo['url']);
+				unset($request->curlInfo['content_type']);
+				unset($request->curlInfo['certinfo']);
+				unset($request->curlInfo['redirect_time']);
+				unset($request->curlInfo['redirect_time']);
+				unset($request->curlInfo['filetime']);
+				unset($request->curlInfo['ssl_verify_result']);
+				$info['curl'] = $request->curlInfo; 
+
 				$info = array_filter($info); //remove empty elements for readability
 				file_put_contents('php://stderr', "Debug " . print_r($info, true));
 			}			
@@ -503,6 +518,24 @@ class Factual {
 			return;
 		}
 		include $filename;
+	}
+
+	/**
+	 * Sets maximum number of seconds to connect to the server before bailing
+	 * @param int secs timeout in seconds
+	 */
+	public function setConnectTimeout($secs){
+		$this->connectTimeout = $secs;
+		return $this;
+	}
+
+	/**
+	 * Sets maximum number of seconds to the network function to execute
+	 * @param int secs timeout in seconds
+	 */
+	public function setCurlTimeout($secs){
+		$this->curlTimeout = $secs;
+		return $this;
 	}
 
 	//The following methods are included as handy convenience; unsupported and experimental
