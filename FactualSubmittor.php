@@ -41,15 +41,6 @@
  		}	
  	}
  	
- 	/**
- 	 * Removes value from specific attribute (sets value to empty)
- 	 * @param string key Field/Column name
- 	 * @return array set values
- 	 */
- 	public function removeValue($key){
- 		$this->values[$key] = "";
- 		return $this->values;
- 	}
  	
  	/**
  	 * Adds key/value pairs to object
