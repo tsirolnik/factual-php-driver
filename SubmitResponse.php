@@ -10,6 +10,7 @@ class SubmitResponse extends FactualResponse {
 
 	protected $newEntity = null;
 	protected $factualID = null;
+	protected $commitID = null;
 
 	/**
 	 * Parses JSON as array and assigns object values
@@ -18,6 +19,7 @@ class SubmitResponse extends FactualResponse {
 	 */
 	protected function parseJSON($json){
 		$rootJSON = parent::parseJSON($json);
+		$this->commitID = $rootJSON['response']['commit_id'];
 		$this->newEntity = (bool)$rootJSON['response']['new_entity'];
 		if ($rootJSON['response']['factual_id']){
 			$this->factualID = $rootJSON['response']['factual_id'];
@@ -39,6 +41,14 @@ class SubmitResponse extends FactualResponse {
 	 */
  	public function getFactualID(){
  		return $this->factualID;
+ 	} 
+
+	/**
+	 * Get the Commit ID (transaction identifier)
+	 * @return string | null on no ID
+	 */
+ 	public function getCommitID(){
+ 		return $this->commitID;
  	} 
 
 }
