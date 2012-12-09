@@ -363,7 +363,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->size() == $requestSample) {
 			$this->msg("HTML Encoding", true);
@@ -389,7 +389,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		//Get URL request string
 		if (strlen($res->getRequest()) > 5) {
@@ -436,12 +436,12 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->size() !== $requestSample) {
-			$this->msg("Unicode", false);
+			$this->msg("Unicode Filter", false);
 		} else {
-			$this->msg("Unicode", true);
+			$this->msg("Unicode Filter", true);
 		}
 	}
 
@@ -453,7 +453,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['us'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->size() !== $requestSample) {
 			$this->msg("Punctuation", false);
@@ -496,7 +496,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->size() !== $requestSample) {
 			$this->msg("Multi Country Search", false);
@@ -520,7 +520,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->reverseGeocode($lon, $lat);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res['house'] == 425 && $res['street'] == "Sherman Ave") {
 			$this->msg("Reverse Geocoder", true);
@@ -546,7 +546,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->size() !== $requestSample) {
 			$this->msg("Geo Search", false);
@@ -589,7 +589,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		$record = $res->getData();
 		$record = $record[0];
@@ -604,7 +604,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->schema($this->testTables['schema']);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->getStatus() == "ok") {
 			$this->msg("Schema Endpoint", true);
@@ -619,7 +619,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['crosswalk'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->getStatus() == "ok") {
 			$this->msg("Crosswalk Endpoint", true);
@@ -637,7 +637,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['resolve'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->getStatus() == "ok") {
 			$this->msg("Resolve Endpoint", true);
@@ -655,7 +655,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD, false, $e->getMessage());
+			$this->msg(__METHOD__, false, $e->getMessage());
 		}
 		if ($res->getStatus() == "ok" && $res->getIncludedRowCount() == $limit) {
 			$this->msg("Limit/Filter/Sort", true);
