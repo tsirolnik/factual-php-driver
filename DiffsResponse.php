@@ -117,9 +117,11 @@ class DiffsResponse extends FactualResponse {
 			'duration' => null
 		);
 
-		foreach ($this as $diff) {
-			$this->stats[$diff['type']]++;
-		}
+		if (count($this) > 0){
+			foreach ($this as $diff) {
+				$this->stats[$diff['type']]++;
+			}
+		}	
 		$this->stats['total'] = count($this);
 		$this->stats['duration'] = $this->getDuration(true);
 		$this->stats['start'] = $this->getStart(true);
