@@ -12,7 +12,7 @@ class FactualTest {
 
 	private $factual;
 	private $writeToFile = null;
-	private $testTables = array('global'=>"global",'resolve'=>"places",'crosswalk'=>"places",'schema'=>"places",'restaurants'=>"restaurants-us",'us'=>"places");
+	private $testTables = array('global'=>"global",'resolve'=>"places",'diffs' => "places-v3",'crosswalk'=>"crosswalk",'schema'=>"places-v3",'restaurants'=>"restaurants-us",'us'=>"places-v3");
 	private $classes = array (
 		"FactualCircle",
 		"FactualColumnSchema",
@@ -303,11 +303,12 @@ class FactualTest {
 		$this->testGeoSearch();
 		$this->testMultiCountry();
 		$this->testResponseMetadata();
-		$this->testGeocode();
+		//$this->testGeocode();
 		$this->testReverseGeocode();
 		$this->testResolve();
-		//$this->testCrosswalk();
+		$this->testCrosswalk();
 		$this->testSchema();
+		$this->testDiffs();
 		$this->testCountries();
 		
 		if (!$this->writeToFile) {
@@ -322,6 +323,26 @@ class FactualTest {
 	public function setLogFile($fileName = null) {
 		if ($fileName){
 			$this->writeToFile = $fileName;
+		}
+	}
+
+	private function testDiffs(){	
+		$query = new DiffsQuery;
+		$query->setStart(1354916463822);
+		$query->setEnd(1354917903834);
+		try {
+	   	 	$res = $this->factual->fetch($this->testTables['diffs'], $query);	
+		} catch (Exception $e) {
+		    if ($res->getCode() == 401){
+		    	$this->msg("Diffs Test", false, "Not Authorized");
+		    } else {
+		    	$this->msg("Diffs Test", false, "Failed with status code ".$res->getCode());
+		    }
+		}
+		if (count($res) == 3){
+			$this->msg("Diffs Test", true);
+		} else {
+			$this->msg("Diffs Test", false, "Expecting 4 results, got ".count($res));
 		}
 	}
 
@@ -548,10 +569,8 @@ class FactualTest {
 	}
 
 	private function testCrosswalk() {
-		$query = $this->getQueryObject();
-		$query = new CrosswalkQuery();
-		$query->_namespace("foursquare");
-		$query->namespaceId("4ae4df6df964a520019f21e3");
+		$query = new FactualQuery;
+		$query->field("url")->equal("http://www.yelp.com/biz/the-stand-los-angeles-6");
 		$res = $this->factual->fetch($this->testTables['crosswalk'], $query);
 		if ($res->getStatus() == "ok") {
 			$this->msg("Crosswalk Endpoint", true);
