@@ -270,6 +270,10 @@ class Factual {
 			return $this->factHome . "t/" . $tableName . "/submit";
 		}
 	}
+	
+	protected function urlForClear($tableName, $factualID) {
+			return $this->factHome . "t/" . $tableName . "/" . $factualID . "/clear";
+	}	
 	/**
 	   * Flags entties as problematic
 	   * @param object FactualFlagger object
@@ -290,8 +294,8 @@ class Factual {
 	}
 
 	/**
-	   * Flags entites as problematic
-	   * @param object FactualFlagger object
+	   * Submit data to Factual
+	   * @param object FactualSubmittor object
 	   * @return object Submit Response object
 	   */
 	public function submit($submittor) {
@@ -302,10 +306,29 @@ class Factual {
 		}
 		//check that object has required attributes set
 		if (!$submittor->isValid()) {
-			throw new Exception("Parameter must have userToken, tableName, values set");
+			throw new Exception("table name, values, and user token required to submit data"); //return string is error message
 			return false;
 		}
 		return new SubmitResponse($this->request($this->urlForSubmit($submittor->getTableName(), $submittor->getFactualID()), "POST", $submittor->toUrlParams()));
+	}
+
+	/**
+	   * Clear a/n attribute/s from a Factual entity
+	   * @param object FactualSubmittor object
+	   * @return object Submit Response object
+	   */
+	public function clear($clear) {
+		//check parameter type
+		if (!$clear instanceof FactualClearor) {
+			throw new Exception("FactualSubmittor object required as parameter of " . __METHOD__);
+			return false;
+		}
+		//check that object has required attributes set
+		if (!$submittor->isValid()) {
+			throw new Exception("Factual ID is required"); //return string is error message
+			return false;
+		}
+		return new SubmitResponse($this->request($this->urlForClear($clear->getTableName(), $clear->getFactualID()), "POST", $clear->toUrlParams()));
 	}
 
 	/**
@@ -478,6 +501,10 @@ class Factual {
 				throw $factualE;
 			}
 		}
+		//check for deprecation, add to stdout
+		if ($result['code'] == 301){
+			file_put_contents('php://stderr', "Entity is deprecated");
+		}
 		return $result;
 	}
 
@@ -540,6 +567,7 @@ class Factual {
 
 	//The following methods are included as handy convenience; unsupported and experimental
 	//They rely on a loosely-coupled third-party service that can be easily swapped out
+	// BIG NOTE: these shim the Yahoo Geocoder, which has changed its TOS since implementation
 
 	/**
 	* Geocodes address string or placename
