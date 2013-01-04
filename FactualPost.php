@@ -47,6 +47,7 @@
  	/**
  	 * Returns key/value pairs. JSON-encodes any arrays
  	 * @internal we'd usually do a reawurlencode() here. Note however that the oauth lib performs this function.
+ 	 * @internal may need to re-visit the way we handle empty values only here
  	 */
  	public function toUrlParams(){
  		$params = $this->getPostVars();
