@@ -22,7 +22,7 @@
 	} 		
 
 	 /**
-	  * Tells Factual Submit API to interpret empty string values as 'cleared'
+	  * Tells Submit API to interpret empty string values as 'cleared'
 	  * Use with care
 	  * @param bool clear
 	  */		
