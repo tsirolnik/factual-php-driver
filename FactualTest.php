@@ -15,7 +15,7 @@ class FactualTest {
 	private $testTables = array (
 		'global' => "global",
 		'resolve' => "places",
-		'diffs' => "places-v3",
+		'diffs' => "places-us",
 		'crosswalk' => "crosswalk",
 		'schema' => "places-v3",
 		'restaurants' => "restaurants-us",
@@ -342,10 +342,16 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['diffs'], $query);
 		} catch (Exception $e) {
-			if ($res->getCode() == 401) {
-				$this->msg("Diffs Test", false, "Not Authorized");
-			} else {
-				$this->msg("Diffs Test", false, "Failed with status code " . $res->getCode());
+			if (!$res){
+				if ($e->getCode() === 0){$err = "No access";}
+				$this->msg("Diffs Test", false,$err);
+				return true;
+			} else{
+				if ($res->getCode() == 401) {
+					$this->msg("Diffs Test", false, "Not Authorized");
+				} else {
+					$this->msg("Diffs Test", false, "Failed with status code " . $res->getCode());
+				}
 			}
 		}
 		if (count($res) == 3) {
