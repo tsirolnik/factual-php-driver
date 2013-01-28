@@ -19,6 +19,7 @@ class FactualTest {
 		'crosswalk' => "crosswalk",
 		'schema' => "places-v3",
 		'restaurants' => "restaurants-us",
+		'submit' => "us-sandbox",
 		'us' => "places-v3"
 	);
 	private $classes = array (
@@ -312,6 +313,7 @@ class FactualTest {
 		$this->testGeoSearch();
 		$this->testMultiCountry();
 		$this->testResponseMetadata();
+		$this->testSubmit();
 		//$this->testGeocode();
 		$this->testReverseGeocode();
 		$this->testResolve();
@@ -332,6 +334,45 @@ class FactualTest {
 	public function setLogFile($fileName = null) {
 		if ($fileName) {
 			$this->writeToFile = $fileName;
+		}
+	}
+
+	private function testSubmit(){
+		$testName = "Submit Test";
+		$submitterator = new FactualSubmittor;
+		//create submission array
+		$data = array(
+			'name' => "Test Legal Services",
+			'address' => "10600 Test Way",
+			'locality' => "Testville",
+			'region' => "FL",
+			'country' => "US",
+			'phone' => "(555) 555-5555",
+			'fax' => "(555) 555-5555",
+			'email' => "test@example.com",
+			'category_ids' => 269,
+		);
+		
+		//add user token & table name (required)
+		$submitterator->setUserToken("phpDriverTest");
+		$submitterator->setTableName($this->testTables['submit']);
+		//set values
+		$submitterator->setValues($data);
+		//make request
+		try {
+			$res = $this->factual->submit($submitterator);
+		} catch (Exception $e) {
+			
+			print_r($e);
+			
+			$this->msg($testName, false, $e->getMessage());
+			return true;
+		}
+		//check for success
+		if ($res->success()){
+			$this->msg($testName, true, "US Sandbox OK");
+		} else {
+			$this->msg($testName, false, "US Sandbox");
 		}
 	}
 
@@ -369,7 +410,7 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 		} catch (Exception $e) {
-			$this->msg(__METHOD__, false, $e->getMessage());
+			$this->msg("HTML Encoding", false, $e->getMessage());
 		}
 		if ($res->size() == $requestSample) {
 			$this->msg("HTML Encoding", true);
