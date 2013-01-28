@@ -1,5 +1,24 @@
 
-## 1.5.0
+## 1.5.3 (27 Jan 2013)
+ * Addded Submit test
+ * Modified error reporting for Diffs test; changed test table
+ * Added clear support for Submit
+ * Added strict mode compatibility to Submit
+ * Added try/catch blocks to all remaining tests
+ * Added South Africa and New Zealand to the test suite
+ * Updated composer.json (thanks simonchrz)
+ * Added getCommitID() method to get submit transaction handle
+ * Removed removeValue() this is now part of the clear API
+ * Test script now takes key and secret as parameters on command line
+ * Fixed test for multi filter
+ * Exposed curlinfo outside class for debug
+ * Added removeValue() for submits
+ * Added debug method to third-party geocode wrapper
+ * Removed crosswalk tests as these are now normal reads
+ * getRowCount() now alias of getTotalRowCount(). Previously returned null.
+ * Fixed bug in rowcount var assignment (thanks rvsiqueira)
+ 
+## 1.5.0 (13 Aug 2012)
  * Added Diffs API support
  * Added Submit API support
  * Added Flag API support
