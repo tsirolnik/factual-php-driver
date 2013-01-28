@@ -362,9 +362,6 @@ class FactualTest {
 		try {
 			$res = $this->factual->submit($submitterator);
 		} catch (Exception $e) {
-			
-			print_r($e);
-			
 			$this->msg($testName, false, $e->getMessage());
 			return true;
 		}
