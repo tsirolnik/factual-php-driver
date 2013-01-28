@@ -15,10 +15,10 @@ class FactualApiException extends Exception {
 	public function __construct($info) {
 		$this->info = $info;
 		$this->message = $info['message'];
-		$this->message .= " Use Factual::debug() to echo detailed debug info to stderr, " .
-				"or use FactualApiException::debug() to obtain this information " .
-				"programatically. See ". $this->helpUrl. " for information on " .
-				"debug mode, submitting issues, and figuring out, generally, WTF is up";
+		//$this->message .= " Use Factual::debug() to echo detailed debug info to stderr ";
+				//"or use FactualApiException::debug() to obtain this information " .
+				//"programatically. See ". $this->helpUrl. " for information on " .
+				//"debug mode, submitting issues, and figuring out, generally, WTF is up";
 	}
 
 	public function debug(){
