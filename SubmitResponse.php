@@ -8,7 +8,7 @@
  */
 class SubmitResponse extends FactualResponse {
 
-	protected $newEntity = null;
+	protected $newEntity = false;
 	protected $factualID = null;
 	protected $commitID = null;
 
@@ -20,8 +20,8 @@ class SubmitResponse extends FactualResponse {
 	protected function parseJSON($json){
 		$rootJSON = parent::parseJSON($json);
 		$this->commitID = $rootJSON['response']['commit_id'];
-		$this->newEntity = (bool)$rootJSON['response']['new_entity'];
-		if ($rootJSON['response']['factual_id']){
+		if (isset($this->newEntity)){$this->newEntity = (bool)$rootJSON['response']['new_entity'];}
+		if (isset($rootJSON['response']['factual_id'])){
 			$this->factualID = $rootJSON['response']['factual_id'];
 		}
 		return $rootJSON;
