@@ -1,6 +1,9 @@
 <?php
 
-
+/*  
+Plugin Name: Factual
+Description: Factual API Wordpress Plugin
+*/
 /**
  * Requires PHP5, php5-curl, SPL (for autoloading)
  */
@@ -314,17 +317,17 @@ class Factual {
 
 	/**
 	   * Clear a/n attribute/s from a Factual entity
-	   * @param object FactualSubmittor object
+	   * @param object FactualClearor object
 	   * @return object Submit Response object
 	   */
 	public function clear($clear) {
 		//check parameter type
 		if (!$clear instanceof FactualClearor) {
-			throw new Exception("FactualSubmittor object required as parameter of " . __METHOD__);
+			throw new Exception("FactualClearor object required as parameter of " . __METHOD__);
 			return false;
 		}
 		//check that object has required attributes set
-		if (!$submittor->isValid()) {
+		if (!$clear->isValid()) {
 			throw new Exception("Factual ID is required"); //return string is error message
 			return false;
 		}
