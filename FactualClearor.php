@@ -8,16 +8,8 @@
  require_once("FactualPost.php");
  class FactualClearor extends FactualPost{
 	//Required Params	
-	protected $values = array();	//values to be cleared	
+	protected $fields = array();	//values to be cleared	
 	 		
- 	/**
- 	 * Overrides parent class
- 	 * @return array
- 	 */	
- 	public function getPostVars(){
- 		return array_merge(parent::getPostVars(),array("values"));
- 	}
- 		
  	/**
  	 * Checks whether required params are included before writing
  	 * @return bool
@@ -29,15 +21,15 @@
  		} 
  		return true;
  	}
- 			
+
  	/**
  	 * Clears attribute of Factual entity
  	 * @param string key Field/Column name
  	 * @return array cleared values
  	 */
  	public function ClearValue($key){
- 		$this->values[] = $key;
- 		return $this->values;
+ 		$this->fields[] = $key;
+ 		return $this->fields;
  	} 	
  	
  	/**
@@ -50,9 +42,21 @@
  			throw new exception (__METHOD__." Parameter must be array of attribute names to clear");
  		}
  		foreach ($data as $value){
- 			$this->values[] = $value;	
+ 			$this->fields[] = $value;	
  		}
- 		return $this->values;
+ 		return $this->fields;
  	} 	 	
+ 	
+ 	/**
+ 	 * Overrides parent class
+ 	 * @return array
+ 	 */	
+ 	public function getPostVars(){
+ 		$postVars = array("fields");		
+ 		return array_merge(parent::getPostVars(),$postVars);
+ 		//$temp = array_merge(parent::getPostVars(),$postVars);
+ 		//print_r($temp);
+ 		//exit;
+ 	}	
  }
 ?>
