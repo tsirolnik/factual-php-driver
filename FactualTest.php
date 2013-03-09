@@ -303,8 +303,8 @@ class FactualTest {
 		$this->classConflicts();
 		$this->test_parse_ini();
 		$this->testExt();
-		$this->testEncoding();
 		$this->testConnect();
+		$this->testEncoding();
 		$this->testQueryFilterLimitSort();
 		$this->testUnicode();
 		$this->testPunctuation();
@@ -723,18 +723,13 @@ class FactualTest {
 		if ($query = $this->getQueryObject()) {
 			$this->setQueryObject($query);
 			try {
-				$res = $this->factual->fetch($this->testTables['global'], $query); //test query
+				@$res = $this->factual->fetch($this->testTables['global'], $query); //test query
 			} catch (FactualAPIException $e) {
-				$this->msg($e->getMessage(), "");
-				$this->msg($e->getErrorType(), "");
-				$this->msg($e->getCode(), "");
-				$this->msg("API Exception", false);
+				$this->msg("API Connection", false,$e->getMessage());
+				exit;
 			}
-			$this->msg("API Connection", true);
-		} else {
-			$this->msg("Exiting", "");
-			exit;
-		}
+		} 
+		$this->msg("API Connection", true);
 	}
 
 	/**
