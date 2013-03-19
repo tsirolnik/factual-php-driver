@@ -230,7 +230,6 @@ class FactualTest {
 	//'SN' => 'Senegal',
 	//'SC' => 'Seychelles',
 	//'SL' => 'Sierra Leone',
-	'SG' => 'Singapore',
 		//'SK' => 'Slovak Republic',
 	//'SI' => 'Slovenia',
 	//'SB' => 'Solomon Islands',
