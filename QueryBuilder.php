@@ -112,6 +112,14 @@ class QueryBuilder {
 		return $this->addFilter("\$lt", $arg);
 	}
 
+	public function includes($arg) {
+		return $this->addFilter("\$includes", $arg);
+	}
+
+	public function includesAny($arg) {
+		return $this->addFilter("\$includes_any", $arg);
+	}
+
 	public function lessThanOrEqual($arg) {
 		return $this->addFilter("\$lte", $arg);
 	}
