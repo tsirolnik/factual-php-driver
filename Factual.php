@@ -175,7 +175,7 @@ class Factual {
 		}
 		return $res;
 	}
-
+	
 	/**
 	 * Resolves and returns resolved entity or null (shortcut method)
 	 * @param string tableName Table name
@@ -190,6 +190,22 @@ class Factual {
 		$res = new ResolveResponse($this->request($this->urlForResolve($tableName, $query)));
 		return $res;
 	}
+
+
+	/**
+   * Runs a read <tt>query</tt> against the specified Factual table.
+   * 
+   * @param string $tableName
+   *          the name of the table you wish to query (e.g., "places")
+   * @param factualId
+   *          the factual id
+   * @param query
+   *          the read query to run against <tt>table</tt>.
+   * @return the response of running <tt>query</tt> against Factual.
+   */
+  public function fetchRow($tableName, $factualID) {
+    return new ReadResponse($this->request($this->urlForFetchRow($tableName, $factualID)));
+  }	
 
 	/**
 	 * Matches entity to Factual ID (shortcut method)
@@ -277,6 +293,11 @@ class Factual {
 	protected function urlForClear($tableName, $factualID) {
 			return $this->factHome . "t/" . $tableName . "/" . $factualID . "/clear";
 	}	
+
+	protected function urlForFetchRow($tableName, $factualID) {
+		return $this->factHome . "t/" . $tableName . "/" . $factualID;
+	}	
+	
 	/**
 	   * Flags entties as problematic
 	   * @param object FactualFlagger object
