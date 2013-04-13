@@ -476,6 +476,7 @@ class Factual {
 		} catch (Exception $e) {
 			//catch client exception
 			$info['request'] = $urlStr;
+			$info['unencodedrequest'] = urldecode($urlStr);
 			$info['driver'] = $this->config['factual']['driverversion'];
 			$info['method'] = $requestMethod;
 			$info['message'] = "Service exception (likely a problem on the server side). Client did not connect and returned '" . $e->getMessage() . "'";
@@ -496,7 +497,10 @@ class Factual {
 			$info['method'] = $requestMethod;
 			if (isset($body['error_type'])){$info['error_type'] = $body['error_type'];}
 			if (isset($body['message'])){$info['message'] = $body['message'];}
-			if (isset($result['request'])){$info['request'] = $result['request'];}
+			if (isset($result['request'])){
+				$info['request'] = $result['request'];
+				$info['unencodedrequest'] = urldecode($result['request']);
+			}
 			if (isset($result['tablename'])){$info['tablename'] = $result['tablename'];}			
 			//add post body to debug
 			if ($params) {
