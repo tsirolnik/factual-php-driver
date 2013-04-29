@@ -476,8 +476,8 @@ class Factual {
 			$callEnd = microtime(true);
 		} catch (Exception $e) {
 			//catch client exception
-			$info['request'] = $urlStr;
-			$info['unencodedrequest'] = urldecode($urlStr);
+			$info['request']['encoded'] = $urlStr;
+			$info['request']['unencoded'] = urldecode($urlStr);
 			$info['driver'] = $this->config['factual']['driverversion'];
 			$info['method'] = $requestMethod;
 			$info['message'] = "Service exception (likely a problem on the server side). Client did not connect and returned '" . $e->getMessage() . "'";
@@ -499,8 +499,8 @@ class Factual {
 			if (isset($body['error_type'])){$info['error_type'] = $body['error_type'];}
 			if (isset($body['message'])){$info['message'] = $body['message'];}
 			if (isset($result['request'])){
-				$info['request'] = $result['request'];
-				$info['unencodedrequest'] = urldecode($result['request']);
+				$info['request']['encoded'] = $result['request'];
+				$info['request']['unencoded'] = urldecode($result['request']);
 			}
 			if (isset($result['tablename'])){$info['tablename'] = $result['tablename'];}			
 			//add post body to debug
