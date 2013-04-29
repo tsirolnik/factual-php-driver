@@ -263,7 +263,8 @@ class Factual {
 	}
 
 	protected function urlForGeopulse($tableName, $query) {
-		return $this->factHome . $tableName."/geopulse?" . $query->toUrlQuery();
+		//return $this->factHome . $tableName."/geopulse?" . $query->toUrlQuery();
+		return $this->factHome . "geopulse/context?" . $query->toUrlQuery();
 	}
 
 	protected function urlForMonetize($tableName, $query) {
