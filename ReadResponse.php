@@ -57,7 +57,7 @@ class ReadResponse extends FactualResponse {
    * @return the main data returned by Factual.
    */
   public function getDataAsJSON() {
-    	return json_encode($this->data);
+    	return json_encode($this->getArrayCopy());
   }
 
 	/**
