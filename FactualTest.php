@@ -385,7 +385,7 @@ class FactualTest {
 				return true;
 			} else{
 				if ($res->getCode() == 401) {
-					$this->msg("Diffs Test", false, "Not Authorized, but that's OK'");
+					$this->msg("Diffs Test", true, "Not Authorized, but that's OK'");
 				} else {
 					$this->msg("Diffs Test", false, "Failed with status code " . $res->getCode());
 				}
