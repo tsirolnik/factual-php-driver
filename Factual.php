@@ -396,15 +396,6 @@ class Factual {
 	}
 
 	/**
-	 * Runs a monetize <tt>query</tt> against the specified Factual table.
-	 * @param query The query to run against monetize.
-	 * @return the response of running <tt>query</tt> against Factual.
-	 */
-	public function monetize($tableName, $query) {
-		return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
-	}
-
-	/**
 	 * Runs a geopulse <tt>query</tt>
 	 * @param query The FactualQuery object
 	 * @return object The ReadResponse object
