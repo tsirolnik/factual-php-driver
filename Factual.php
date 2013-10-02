@@ -267,10 +267,6 @@ class Factual {
 		return $this->factHome . "geopulse/context?" . $query->toUrlQuery();
 	}
 
-	protected function urlForMonetize($tableName, $query) {
-		return $this->factHome . $tableName . "/monetize?" . $query->toUrlQuery();
-	}
-
 	protected function urlForGeocode($tableName, $query) {
 		return $this->factHome . $tableName . "/geocode?" . $query->toUrlQuery();
 	}
@@ -393,15 +389,6 @@ class Factual {
 	public function multiFetch() {
 		$res = $this->urlForMulti();
 		return new MultiResponse($this->request($res['url']), $res['response']);
-	}
-
-	/**
-	 * Runs a monetize <tt>query</tt> against the specified Factual table.
-	 * @param query The query to run against monetize.
-	 * @return the response of running <tt>query</tt> against Factual.
-	 */
-	public function monetize($tableName, $query) {
-		return new ReadResponse($this->request($this->urlForMonetize($tableName, $query)));
 	}
 
 	/**
