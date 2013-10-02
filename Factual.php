@@ -262,8 +262,7 @@ class Factual {
 		return $res;
 	}
 
-	protected function urlForGeopulse($tableName, $query) {
-		//return $this->factHome . $tableName."/geopulse?" . $query->toUrlQuery();
+	protected function urlForGeopulse($query) {
 		return $this->factHome . "geopulse/context?" . $query->toUrlQuery();
 	}
 
@@ -396,8 +395,8 @@ class Factual {
 	 * @param query The FactualQuery object
 	 * @return object The ReadResponse object
 	 */
-	public function geopulse($tableName, $query) {
-		return new ReadResponse($this->request($this->urlForGeopulse($tableName, $query)));
+	public function geopulse($query) {
+		return new ReadResponse($this->request($this->urlForGeopulse($query)));
 	}
 
 /**
