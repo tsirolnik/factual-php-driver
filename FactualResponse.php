@@ -148,6 +148,14 @@ abstract class FactualResponse extends ArrayIterator {
   public function getRequest(){
   	return urldecode($this->request);
   }
+
+  /**
+   * Get url-encoded request string, does not include auth.
+   * @return string
+   */
+  public function getRawRequest(){
+  	return $this->request;
+  }
   
   /**
    * Get table name queried
