@@ -20,7 +20,7 @@ class FactualTest {
 		'schema' => "places-v3",
 		'restaurants' => "restaurants-us",
 		'submit' => "us-sandbox",
-		'us' => "places-v3"
+		'us' => "places-us"
 	);
 	private $classes = array (
 		"FactualCircle",
@@ -307,6 +307,7 @@ class FactualTest {
 		$this->testQueryFilterLimitSort();
 		$this->testUnicode();
 		$this->testPunctuation();
+		$this->testQuotes();
 		$this->testInCriterion();
 		$this->testMultiFilter();
 		$this->testGeoSearch();
@@ -334,6 +335,24 @@ class FactualTest {
 		if ($fileName) {
 			$this->writeToFile = $fileName;
 		}
+	}
+
+	private function testQuotes(){
+		$testName = "Quotes Test";
+		$query = new FactualQuery();
+		$query->search("\"a b c\"");
+		try {
+			$res = $this->factual->fetch($this->testTables['us'], $query);
+		} catch (Exception $e) {
+			$this->msg($testName, false, $e->getMessage());
+			return true;
+		}
+		//check for success
+		if (strstr($res->getRawRequest(),"q=%22a%20b%20c%22")){
+			$this->msg($testName, true);
+		} else {
+			$this->msg($testName, false);
+		}	
 	}
 
 	private function testSubmit(){
