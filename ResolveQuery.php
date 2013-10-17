@@ -27,6 +27,19 @@ class ResolveQuery extends FactualQuery {
   }
 
 	/**
+	 * Adds factual entity to query for resolution.
+	 * Use for refreshing chached entityies that do not redirect
+	 * @param array entity Factual entity with Factual attribute names as key
+	 * $return object This query object 
+	 */  
+  public function addEntity($entity){
+  	foreach ($entity as $key => $val){
+		  	$this->values[$key]=$val; 		
+  	}
+  	return $this; 
+  }
+  
+	/**
 	 * Turns on debugging and multiple results
 	 */
 	public function debug() {
