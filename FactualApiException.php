@@ -12,14 +12,15 @@ class FactualApiException extends Exception {
 	protected $info; //debug array
 	protected $helpUrl = "https://github.com/Factual/factual-php-driver/wiki/Debugging-and-Support";
 
+	public function getError(){
+		return $this->info['error_type'];
+	}
+
 	public function __construct($info) {
 		$this->info = $info;
 		if (isset($info['message'])){
 			$this->message = $info['message'];
-			//$this->message .= " Use Factual::debug() to echo detailed debug info to stderr ";
-				//"or use FactualApiException::debug() to obtain this information " .
-				//"programatically. See ". $this->helpUrl. " for information on " .
-				//"debug mode, submitting issues, and figuring out, generally, WTF is up";
+			$this->code = $info['code'];
 		} else {
 			$this->message = "Unknown error; no message returned from server";
 		}
