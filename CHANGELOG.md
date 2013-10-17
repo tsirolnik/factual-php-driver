@@ -1,4 +1,25 @@
 
+## 1.5.4 (17 Oct 2013)
+ * Assign error code to object on instantiation
+ * Added addEntity() for resolving entity as array rather than key/value
+ * Tested and built integration/regression test for quotes strings
+ * Added getRawRequest() to obtain URL-encoded request string
+ * Fixed issue in Geopulse Context URL generation
+ * Removed monetize
+ * Clarified 'not authorized' message on Diffs test: Diffs test returns true on 'not authorized'
+ * Fixed bug in getDataAsJSON()
+ * Added coded/unencoded request into same element in debug return
+ * Added new, updated geopulse endpoint
+ * Added unencoded request to debug mode
+ * Added includes(), includesAny()
+ * Added fetchrow()
+ * Removed double index on SG
+ * Updates to FactualTest.php
+ * Changed JSON parse to isset()
+ * Restructured postvars
+ * Added two-line comment header for Wordpress …
+ * Catching errors without message
+
 ## 1.5.3 (27 Jan 2013)
  * Addded Submit test
  * Modified error reporting for Diffs test; changed test table
