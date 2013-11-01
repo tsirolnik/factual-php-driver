@@ -32,7 +32,7 @@ class Factual {
 	protected $fetchQueue = array (); //array of queries teed up for multi
 	protected $debug = false; //debug flag
 	protected $curlTimeout = 0; //maximum number of seconds for the network function to execute (0 = no timeout)
-	protected $connectTimeout = 10; //maximum number of seconds to connect to the server (0 = no timeout)
+	protected $connectTimeout = 0; //maximum number of seconds to connect to the server (0 = no timeout)
 
 	/**
 	 * Constructor. Creates authenticated access to Factual.
