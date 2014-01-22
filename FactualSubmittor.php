@@ -8,7 +8,7 @@
  require_once("FactualPost.php");
  class FactualSubmittor extends FactualPost{
 	//Required Params	(uses API parameter names)
-	protected $values = array();	//values to be submitted
+	public $values = array();	//values to be submitted
 	protected $strict = false;		//strict mode (accept submissions with only valid attributes)
 	protected $clear_blanks = false; //clear all empty values
 		
@@ -38,7 +38,7 @@
  	public function getPostVars(){
  		$postVars = array("values");
  		if ($this->strict){
- 			$postVars = "strict";	
+ 			$postVars[] = "strict";	
  		}
  		if ($this->clear_blanks){
  			$postVars[] = "clear_blanks";	
