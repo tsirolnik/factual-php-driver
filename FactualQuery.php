@@ -176,10 +176,13 @@ class FactualQuery {
 		$this->geo = $circle;
 		return $this;
 	}
+	
+	
+	
 
 	/**
 	 * Adds a filter so that results can only be obtained at a specified point
-	 * @param circle The circle within which to bound the results.
+	 * @param point The point within which to center the results.
 	 * @return this Query.
 	 */
 	public function at($point) {
