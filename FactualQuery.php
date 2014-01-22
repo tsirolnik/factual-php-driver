@@ -168,7 +168,9 @@ class FactualQuery {
 	 * @return this Query.
 	 */
 	public function within($geo) {
-		if (!$geo instanceof FactualCircle || !$geo instanceof FactualRectangle){
+		$type = get_class ($geo);
+		$valid = array("FactualRectangle","FactualCircle");
+		if (!in_array($type,$valid)){
 			throw new Exception(__METHOD__." must take FactualCircle or FactualRectangle object as parameter");
 			return false;
 		}
