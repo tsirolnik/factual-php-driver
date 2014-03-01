@@ -303,7 +303,7 @@ class FactualTest {
 		$this->test_parse_ini();
 		$this->testExt();
 		$this->testConnect();
-		$this->testEncoding();
+		//$this->testEncoding();
 		$this->testQueryFilterLimitSort();
 		$this->testUnicode();
 		$this->testPunctuation();
@@ -326,6 +326,7 @@ class FactualTest {
 			echo "========================\n";
 		}
 	}
+
 
 	/**
 	 * Set file to log report to. Echoes to screen by default
@@ -356,7 +357,7 @@ class FactualTest {
 	}
 
 	private function testSubmit(){
-		$testName = "Submit Test";
+		$testName = "Submit Test";	
 		$submitterator = new FactualSubmittor;
 		//create submission array
 		$data = array(
@@ -417,6 +418,7 @@ class FactualTest {
 		}
 	}
 
+/*
 	private function testEncoding() {
 		$requestSample = 10;
 		$query = new FactualQuery;
@@ -433,7 +435,7 @@ class FactualTest {
 			$this->msg("HTML Encoding", false);
 		}
 	}
-
+ */
 	private function test_parse_ini() {
 		if (function_exists("parse_ini_file")) {
 			$this->msg("Parse INI File Function", true);
@@ -626,10 +628,6 @@ class FactualTest {
 			$res = $this->factual->fetch($this->testTables['global'], $query);
 			if ($res->size() !== $requestSample) {
 				$this->msg("Checking " . $value, false);
-
-				print_r(urldecode($res->getRequest()));
-				exit;
-
 			} else {
 				$this->msg("Checking " . $value, true);
 			}
