@@ -303,7 +303,6 @@ class FactualTest {
 		$this->test_parse_ini();
 		$this->testExt();
 		$this->testConnect();
-		//$this->testEncoding();
 		$this->testQueryFilterLimitSort();
 		$this->testUnicode();
 		$this->testPunctuation();
@@ -404,8 +403,9 @@ class FactualTest {
 				$this->msg("Diffs Test", false,$err);
 				return true;
 			} else{
-				if ($res->getCode() == 401) {
-					$this->msg("Diffs Test", true, "Not Authorized, but that's OK'");
+				$respCode = $res->getCode();
+				if ($respCode == 403 || $respCode == 401) {
+					$this->msg("Diffs Test", true, "Not Authorized [".$respCode."], but that's expected'");
 				} else {
 					$this->msg("Diffs Test", false, "Failed with status code " . $res->getCode());
 				}
@@ -418,24 +418,6 @@ class FactualTest {
 		}
 	}
 
-/*
-	private function testEncoding() {
-		$requestSample = 10;
-		$query = new FactualQuery;
-		$query->field("category")->equal("Food & Beverage > Restaurants");
-		$query->limit($requestSample);
-		try {
-			$res = $this->factual->fetch($this->testTables['global'], $query);
-		} catch (Exception $e) {
-			$this->msg("HTML Encoding", false, $e->getMessage());
-		}
-		if ($res->size() == $requestSample) {
-			$this->msg("HTML Encoding", true);
-		} else {
-			$this->msg("HTML Encoding", false);
-		}
-	}
- */
 	private function test_parse_ini() {
 		if (function_exists("parse_ini_file")) {
 			$this->msg("Parse INI File Function", true);
@@ -593,14 +575,6 @@ class FactualTest {
 		}
 	}
 
-	/*
-		private function testPlaceObjects(){
-			$query = new FactualQuery();
-			$query->limit(1);
-			$res = $this->factual->fetch($this->testTables['global'], $query); 
-			$places = $res->
-		}
-	*/
 	private function testGeoSearch() {
 		$requestSample = 3;
 		$query = new FactualQuery();
