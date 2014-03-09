@@ -452,12 +452,18 @@ class Factual {
 		return $res['body'];
 	}
 
-	/**
-	 * Sign the request, perform a curl request and return the results
-	 * @param string urlStr unsigned URL request
-	 * @return array ex: array ('code'=>int, 'headers'=>array(), 'body'=>string)
-	 */
-	protected function request($urlStr, $requestMethod="GET", $params = null) {
+
+    /**
+     * Sign the request, perform a curl request and return the results
+     *
+     * @param string $urlStr unsigned URL request
+     * @param string $requestMethod
+     * @param null $params
+     * @param array $curlOptions
+     * @return array ex: array ('code'=>int, 'headers'=>array(), 'body'=>string)
+     * @throws FactualApiException
+     */
+    protected function request($urlStr, $requestMethod="GET", $params = null, $curlOptions = array()) {
 		//custom headers
 		$curlOptions[CURLOPT_HTTPHEADER] = array ();
 		$curlOptions[CURLOPT_HTTPHEADER][] = "X-Factual-Lib: " . $this->config['factual']['driverversion'];
