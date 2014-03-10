@@ -398,24 +398,26 @@ class FactualTest {
 		try {
 			$res = $this->factual->fetch($this->testTables['diffs'], $query);
 		} catch (Exception $e) {
-			if (!$res){
-				if ($e->getCode() === 0){$err = "No access";}
+            		if ($e->getCode() === 0) {
+                		$err = "No access";
 				$this->msg("Diffs Test", false,$err);
-				return true;
-			} else{
-				$respCode = $res->getCode();
+		 	} else {
+				$respCode = $e->getCode();
 				if ($respCode == 403 || $respCode == 401) {
 					$this->msg("Diffs Test", true, "Not Authorized [".$respCode."], but that's expected'");
 				} else {
-					$this->msg("Diffs Test", false, "Failed with status code " . $res->getCode());
+					$this->msg("Diffs Test", false, "Failed with status code " . $e->getCode());
 				}
 			}
 		}
-		if (count($res) == 3) {
-			$this->msg("Diffs Test", true);
-		} else {
-			$this->msg("Diffs Test", false, "Expecting 4 results, got " . count($res));
-		}
+        
+        	if($res) {
+            		if (count($res) == 3) {
+ 				$this->msg("Diffs Test", true);
+            		} else {
+                		$this->msg("Diffs Test", false, "Expecting 4 results, got " . count($res));
+            		}
+        	}
 	}
 
 	private function test_parse_ini() {
