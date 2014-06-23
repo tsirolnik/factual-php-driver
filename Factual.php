@@ -276,6 +276,7 @@ class Factual {
 		return $res;
 	}
 
+	//Geopulse is deprecated
 	protected function urlForGeopulse($query) {
 		return $this->factHome . "geopulse/context?" . $query->toUrlQuery();
 	}
@@ -409,9 +410,10 @@ class Factual {
 	}
 
 	/**
-	 * Runs a geopulse <tt>query</tt>
+	 * Runs a geopulse <tt>query</tt> *DEPRECATED*
 	 * @param query The FactualQuery object
 	 * @return object The ReadResponse object
+	 * @deprecated v1.5.8
 	 */
 	public function geopulse($query) {
 		return new ReadResponse($this->request($this->urlForGeopulse($query)));
