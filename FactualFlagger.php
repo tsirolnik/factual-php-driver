@@ -22,10 +22,12 @@
  	public function setProblem($var){
  		$var = strtolower($var);
  		$validProblems = array(
+ 		"closed",
 		"duplicate",
 		"nonexistent",
 		"inaccurate",
 		"inappropriate",
+ 		"relocated",
 		"spam",
 		"other");
  		if (in_array($var,$validProblems)){
