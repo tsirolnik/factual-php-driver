@@ -8,7 +8,7 @@
  require_once("FactualPost.php");
  class FactualFlagger extends FactualPost{
 	//Required Params
-	public $problem = null;   //duplicate|nonexistent|inaccurate|inappropriate|spam|other
+	public $problem = null;   //duplicate|nonexistent|inaccurate|inappropriate|spam|relocated|other
 	//Optional Params
 	public $debug = null;     //bool flag telling service to only test the flagging process
  	
