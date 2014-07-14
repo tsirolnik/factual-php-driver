@@ -19,6 +19,7 @@ class FactualQuery {
 	protected $includeRowCount = false; //bool
 	protected $geo = null; 
 	protected $keyValuePairs = array(); //misc key-value pairs added as additional parameters
+	protected $threshold = null; // takes an enumerated value ("confident", "default", "comprehensive")
 	const RESPONSETYPE = "ReadResponse";
 
 	/**
@@ -94,6 +95,11 @@ class FactualQuery {
 	 */
 	public function getSelectFields() {
 		return $this->selectFields;
+	}
+
+	public function threshold($threshold){
+	       $this->threshold = $threshold;
+	       return $this;
 	}
 
 	/**
@@ -247,6 +253,7 @@ class FactualQuery {
 		$temp['include_count'] =  ($this->includeRowCount ? "true" : null);
 		$temp['filters'] = $this->rowFiltersJsonOrNull();
 		$temp['geo'] = $this->geoBoundsJsonOrNull();
+		$temp['threshold'] = $this->thresholdOrNull();
 		$temp = array_filter($temp); //remove nulls		
 
 		//initialize
@@ -280,6 +287,14 @@ class FactualQuery {
 			return urldecode($this->toUrlQuery());
 		} catch (Exception $e) {
 			throw $e;
+		}
+	}
+
+	protected function thresholdOrNull() {
+		if ($this->threshold != null){
+		        return $this->threshold;
+		}else{
+		        return null;
 		}
 	}
 
