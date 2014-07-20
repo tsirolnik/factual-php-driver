@@ -267,10 +267,10 @@ The drivers parse the JSON for you and return a _result_ object as a result of f
 	//Get the entities as a JSON array
 	$res = $res->getDataAsJSON();	
 
-        //iterate through the result records, just like an array
-        foreach ($res as $entity){
-              //your code
-        }
+	//iterate through the result records, just like an array
+	foreach ($res as $entity){
+	//your code
+	}
 ```	
 To help with debugging, we also provide in the response object metadata about the query and the response.  See the section on Call Introspection, above.
 
@@ -568,13 +568,13 @@ Use Facets to analyze the results of your query by count: for example, you may w
 
 ### Facets Example
 ```php
-	//Finds the top twenty-five countries containing places with the string 'Starbucks'
-	$query = new FacetQuery("country"); //name the field to facet on in the constructor
-	$query->search("starbucks"); //search on 'Starbucks' using the usual paramateric filters
-	$query->limit(15); //show no more than 15 results
-	$query->minCountPerFacet(10); //only show countries with more than 10 results
-	$res = $factual->fetch("global", $query); //perform the query using Factual::fetch() as usual
-	print_r($res->getData()); //dump results out as an array
+//Finds the top twenty-five countries containing places with the string 'Starbucks'
+$query = new FacetQuery("country"); //name the field to facet on in the constructor
+$query->search("starbucks"); //search on 'Starbucks' using the usual paramateric filters
+$query->limit(15); //show no more than 15 results
+$query->minCountPerFacet(10); //only show countries with more than 10 results
+$res = $factual->fetch("global", $query); //perform the query using Factual::fetch() as usual
+print_r($res->getData()); //dump results out as an array
 ```	
 The response looks like:
 
