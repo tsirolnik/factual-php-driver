@@ -8,11 +8,8 @@ Many Bothamns died to bring you this documentation.
 #PHP Specifics 
 ##Dependencies
 * PHP >=5.1.2 is required. 
-
 * The php5-curl module is required. 
-
 * SPL is required for autoloading.
-
 * JSON is required.  Some distributions as of PHP 5.5rc2 lack the previously included JSON extension due to a license conflict.  Use <tt>sudo apt-get install php5-json</tt>.
 
 The package includes lightly modified [Google's oauth libraries](http://code.google.com/p/oauth-php/)
@@ -39,7 +36,7 @@ This checks your PHP install environment and performs a number of unit tests. Th
 
 ## Using the Driver
 Require the file 'Factual.php, and instantiate a <tt>factual</tt> object with the key and secret as parameters'
-    
+```PHP    
     //setup
     require_once('Factual.php');
     $factual = new Factual("yourOauthKey","yourOauthSecret");
@@ -49,7 +46,7 @@ The driver creates an authenticated handle to Factual and configures class loadi
 ## Simple Query Example
 
 (Remember, first create a Factual object as we've done above.)
-
+```PHP
     // Find 3 random records 
     $query = new FactualQuery;
     $query->limit(3);
@@ -59,6 +56,7 @@ The driver creates an authenticated handle to Factual and configures class loadi
 ## Full Text Search Example
 
     // Find entities that match a full text search for Sushi in Santa Monica:
+```PHP
     $query = new FactualQuery;
 	$query->search("Sushi Santa Monica");
     $res = $factual->fetch("places", $query);
@@ -179,7 +177,7 @@ A number of `Result` object methods allow introspection into the call itself.  T
 
 #Schema
 The schema endpoint returns table metadata:
-  
+```PHP  
 	$res = $factual->schema("places");
 	print_r($res->getColumnSchemas());
 
@@ -260,7 +258,7 @@ Use the follow syntax to perform searches against Factual data:
 
 ##Extracting Data from Query Results
 The drivers parse the JSON for you and return a _result_ object as a result of factual::fetch(), but you can work directly with JSON, Arrays, or Objects.  In these examples, $res is the _result_ object returned by an API query:
- 
+```PHP 
 	//Get the original JSON (includes status and metadata)
 	$res = $res->getJson();
 	
@@ -279,7 +277,7 @@ To help with debugging, we also provide in the response object metadata about th
 
 ##Field Selection
 By default your queries will return all fields in the table. You can use the only modifier to specify the exact set of fields returned. For example:
-
+```PHP
     // Build a Query that only gets the name, tel, and category fields:
 	$query = new FactualQuery;
 	$query->limit(10);    
@@ -291,13 +289,13 @@ By default your queries will return all fields in the table. You can use the onl
 The driver supports various row filter logic. See the [Row Filter API documentation](http://developer.factual.com/display/docs/Core+API+-+Row+Filters).
 
 Examples:
-
+```PHP
     // Build a query to find places whose name field starts with "Starbucks"
     $query = new FactualQuery;
     $query->field("name")->beginsWith("Starbucks");
     $res = $factual->fetch("places", $query);
 	print_r($res->getData());  
-
+```PHP
     // Build a query to find places with a blank telephone number
     $query = new FactualQuery;
     $query->field("tel")->blank();
@@ -402,7 +400,7 @@ Examples:
 
 ### AND
 Queries support logical AND'ing your row filters. For example:
-
+```PHP
     // Build a query to find entities where the name begins with "Coffee" AND the telephone is blank:
     $query = new FactualQuery;
     $query->_and(
@@ -415,7 +413,7 @@ Queries support logical AND'ing your row filters. For example:
 	print_r($res->getData());
     
 Note that all row filters set at the top level of the Query are implicitly AND'ed together, so you could also do this:
-	
+```PHP	
     //Combined query alternative syntax
     $query = new FactualQuery;
     $query->field("name")->beginsWith("Coffee");
@@ -425,7 +423,7 @@ Note that all row filters set at the top level of the Query are implicitly AND'e
 
 ### OR
 Queries support logical OR'ing your row filters. For example:
-
+```PHP
     // Build a query to find entities where the name begins with "Coffee" OR the telephone is blank:
     $query = new FactualQuery;
     $query->_or(array(
@@ -438,7 +436,7 @@ Queries support logical OR'ing your row filters. For example:
 	
 ### Combined ANDs and ORs
 You can nest AND and OR logic to whatever level of complexity you need. For example:
-
+```PHP
     // Build a query to find entities where:
     // (name begins with "Starbucks") OR (name begins with "Coffee")
     // OR
@@ -464,6 +462,7 @@ You can nest AND and OR logic to whatever level of complexity you need. For exam
 Geo Filters provide the means to query Factual for entities located within a circle, rectangle, or near a point:
 
 ### Circle (Point/Radius)
+```PHP
 	// Find entities located within 5000 meters of a latitude, longitude
 	$query->within(new FactualCircle(34.06018, -118.41835, 5000)); //lat, lon, radius
       
@@ -472,12 +471,14 @@ Geo Filters provide the means to query Factual for entities located within a cir
 * The radius for point/radius queries is limited to 15 km.
 
 ### Point
+```PHP
 	// Find entities located adjacent to a latitude, longitude
 	$query->at(new FactualPoint(34.06018, -118.41835));
 
 * Point queries are just shortcuts for a circle query, with an implied radius of 500m.
 
 ### Rectangle
+```PHP
 	// Find entities located within a box over LA
 	$query->within(new FactualRectangle(34.06110,-118.42283,34.05771,-118.41399)); 
 
@@ -488,12 +489,12 @@ Geo Filters provide the means to query Factual for entities located within a cir
 * Distance is always specified in meters
 * The maximum area that any geo query can encompass is 900 km2
 * Sorting by distance requires a special $distance operator.  Be sure to escape the dollar sign:
-
+```PHP
 	$query->sortAsc("\$distance"); //order results 
 
 ##Search By Factual ID (FetchRow)
 The <tt>fetchrow()</tt> method retrieves entities by Factual ID.  Is a simple shortcut equivalent to a filter on Factual ID, and returns an array with one element like a regular read:
-
+```PHP
 	//get started
 	require_once('Factual.php');
 	$factual = new Factual($key,$secret);
@@ -506,7 +507,7 @@ The <tt>fetchrow()</tt> method retrieves entities by Factual ID.  Is a simple sh
 
 ##Paging Through Results: Limit and Offset
 You can use limit and offset to support basic results paging. For example:
-
+```PHP
     // Build a Query with offset of 150, limiting the page size to 10:
     $query = new FactualQuery;
 	$query->limit(10);
@@ -522,13 +523,13 @@ This is the polite way of saying we'd rather you did not use our API to scrape F
 Factual does not return the total number of records matching your filter by default -- there is a modest overhead in calculating this. We do however provide you the option of retrieving it explicitly.
 
 To obtain the total number of all entities that meet your query criteria, set the parameter in the query object using <tt>FactualQuery::includeRowCount()</tt> method:
-
+```PHP
 	$query = new FactualQuery;
 	$query->field("postcode")->equal("95008");
 	$query->includeRowCount();
 
 After you've made the query using <tt>Factual::fetch()</tt>, the resultant number can be obtained with the <tt>ReadResponse::getTotalRowCount()</tt> call on the response object:
-
+```PHP
 	$res = $factual->fetch("places", $query); 
 	print_r($res->getTotalRowCount()); 
 
@@ -536,7 +537,7 @@ API Documentation:  https://github.com/Factual/factual-php-driver/wiki/Total-Row
 
 ##Sorting Results
 Factual will sort your query results for you, on a field-by-field basis. Simple examples:
-
+```PHP
     // Build a Query to find 10 random entities and sort them by name, ascending:
     $query = new FactualQuery;
     $query->limit(10);
@@ -545,7 +546,7 @@ Factual will sort your query results for you, on a field-by-field basis. Simple 
 	print_r($res->getData());  
     
 You can specify more than one sort, and the results will be sorted with the first sort as primary, the second sort or secondary, and so on:
-
+```PHP
     // Build a Query to find 20 random entities, sorted ascending primarily by region, then by locality, then by name:
 	$query = new FactualQuery;
 	$query->limit(10);
@@ -556,7 +557,7 @@ You can specify more than one sort, and the results will be sorted with the firs
 	print_r($res->getData());
 	
 Sorting by distance requires a special $distance operator.  Be sure to escape the dollar sign in PHP:
-
+```PHP
 	$query->sortAsc("\$distance"); //order results 
 
 Read API Documentation: http://developer.factual.com/api-docs/#Read
@@ -567,7 +568,7 @@ Facets is a special call that returns summary row counts grouped by values of a 
 Use Facets to analyze the results of your query by count: for example, you may wish to query all businesses within 500m of a location, group those businesses by category, and get a count of each.  
 
 ### Facets Example
-
+```PHP
 	//Finds the top twenty-five countries containing places with the string 'Starbucks'
 	$query = new FacetQuery("country"); //name the field to facet on in the constructor
 	$query->search("starbucks"); //search on 'Starbucks' using the usual paramateric filters
@@ -636,16 +637,16 @@ The Submit endpoint allows you to add a record to Factual, or to update an exist
 
 ## Syntax
 Strictly speaking, we do an 'UPSERT' when you contribute data: we determine if the entity already exists, and update it appropriately; if not we create a new entity.  This avoids dupes and allows you to contribute data even if you do not know the Factual ID.  However, if you do, please include it to remove any ambiguity using the <tt>FactualSubmittor::setFactualID()</tt> method.  The only difference between updating an extant record and adding a new one is this inclusion of the Factual ID:
-
+```PHP
 	$submitterator->setFactualID("f33527e0-a8b4-4808-a820-2686f18cb00c");
 
 You can determine whether the entity you submitted is new:
-
+```PHP
 	//is the submission a new entity?
 	$factualID = $res->isNew();
 
 However, It's always a good idea to obtain the Factual ID from a Submit Result, and store it against the submitted entity:
-
+```PHP
 	//get Factual ID of submitted entity
 	$factualID = $res->getFactualID();
 
@@ -704,7 +705,7 @@ By default, Factual's API will optimistically accept all field provided in the v
 But by being cool and froody, we introduce a downside: you will not be warned if data you are providing may be discarded due to simple mismatches between field names and what you've put in your values parameter.  For example, if you misspell "category" as "catogory".  
 
 Setting the strict parameter to true will cause the system to automatically verify the names of the values you provided against the Factual schema.  Any fields that do not match will cause your entire submission to automatically be rejected with a 400 error.
-
+```PHP
 	//create submittor object and set strictMode to true
 	$submitterator = new FactualSubmittor;
 	$submitterator->strictMode(); //sets to true
@@ -719,7 +720,7 @@ Setting the strict parameter to true will cause the system to automatically veri
 
 ## Clear Blanks
 By default Factual employs a separate call to clear a field of information.  This is because it is so easy to send empty values with out really intending to clear the corresponding attribute.  Using clearBlanks() circumvents this safeguard so that the clearing of fields can be accomplished in a single API call.  For example:
-
+```PHP
 	//create submittor object and set clearBlanks to true
 	$submitterator = new FactualSubmittor;
 	$submitterator->clearBlanks(); //sets to true
@@ -738,7 +739,7 @@ will behave identically to sending a submit request with the name, address and a
 ##Submit Examples
 
 <b><ex>Add data to Factual's Places table:</ex></b><br>
-
+```PHP
 	//Create new submittor object and assign table to write to
 	$submitterator = new FactualSubmittor;
 	$tableName = "us-sandbox"; //the table we are writing to
@@ -767,7 +768,7 @@ will behave identically to sending a submit request with the name, address and a
 
 <b><ex>Add data as array:</ex></b><br>
 This does the same as the previous example, but takes an associative array as parameter:
-
+```PHP
 	//Create new submittor object and assign table to write to
 	$submitterator = new FactualSubmittor;
 	$tableName = "us-sandbox"; //the table we are writing to
@@ -799,11 +800,11 @@ This does the same as the previous example, but takes an associative array as pa
 
 <b><ex>Determine whether Factual considered your Submit to be a new entity:</ex></b><br>
 Use <tt>SubmitResponse::isNew()</tt>:
-
+```PHP
 	echo "New Response?:". (bool)$res->isNew();
 
 <b><ex>Correct the latitude and longitude of a specific entity in Factual's Places table:</ex></b><br>
-
+```PHP
 	//Create new submittor object and assign table to write to
 	$submitterator = new FactualSubmittor;
 	$tableName = "us-sandbox"; 
@@ -837,7 +838,7 @@ Use <tt>SubmitResponse::isNew()</tt>:
 	$res = $factual->submit($submitterator);
 
 <b><ex>Add a neighborhood to a specific entity in Factual's Places table:</ex></b><br>
-
+```PHP
 	//Create new submittor object and assign table to write to
 	$submitterator = new FactualSubmittor;
 	$tableName = "us-sandbox"; 
@@ -854,7 +855,7 @@ Use <tt>SubmitResponse::isNew()</tt>:
 	$res = $factual->submit($submitterator);
 	
 <b><ex>Delete the neighborhood of a specific entity in Factual's Places table:</ex></b><br>	
-	
+```PHP	
 	//Create new submittor object and assign table to write to
 	$submitterator = new FactualSubmittor;
 	$tableName = "us-sandbox"; 
@@ -877,7 +878,7 @@ Submit API documentation for Places: http://developer.factual.com/write-api/
 The Flag feature provides developers and editorial teams the ability to 'flag' problematic entities in tables for Factual editorial review. Use this feature to request an entity be deleted, flag an entity as a dupe or spam, note it does not exist, or just ask the Factual editors to check it out.
 
 ### Flag Example
-
+```PHP
 	//get started
 	require_once('Factual.php');
 	$factual = new Factual($key,$secret);
@@ -942,7 +943,7 @@ The Clear() method allows you to clear or remove attribute values from a Factual
 
 ### Clear Examples
 <b><ex>Clear the value of the longitude and latitude in an existing entity:</ex></b><br>
-
+```PHP
 	//create clearor object
 	$clearor = new FactualClearor;
 	
@@ -959,7 +960,7 @@ The Clear() method allows you to clear or remove attribute values from a Factual
 	$res = $factual->clear($clearor);
 
 As an alternative you can use <tt>clearValues()<tt> to clear multiple attributes:
-
+```PHP
 	$values = array("longitude","latitude");
 	$clearor->clearValues($values);
 
@@ -971,7 +972,7 @@ Factual's Crosswalk feature lets you "crosswalk" the web by looking up Factual e
 Note that as of v1.4.3, crosswalk requests are treated as any other table read -- this means that you can access the Crosswalk table using normal search and filters, as in the example below. As of v.1.5.0 all deprecated Crosswalk functions have been removed.
 
 ## Places Crosswalk Example
-
+```PHP
     // Get all Crosswalk data for a specific Place, using its Factual ID:
     $query = new FactualQuery;    
 	$query->field("factual_id")->equal("97598010-433f-4946-8fd5-4a6dd1639d77");	 
@@ -989,7 +990,7 @@ Generally the more information you provide the service, the better we are able t
 
 ## Finding a Match
 Use the common query structure to add known attributes to the query:
-
+```PHP
     //Build the query
 	$query = new MatchQuery();
 	$query->add("name", "Buena Vista Cigar Club");
@@ -999,12 +1000,12 @@ Use the common query structure to add known attributes to the query:
 	$res = $factual->fetch("places", $query);
 
 And then see if we found a match:	
-	
+```PHP	
 	$match = $res->getMatched()); //FALSE == no match, Factual ID == match	
 
 ## Shortcut Method
 Alternatively use the shortcut method in the <tt>Factual</tt> object:
-	
+```PHP	
 	//assing tablename
 	$tableName = "places";
 	//create values array
@@ -1025,7 +1026,7 @@ Note that we provide a separate endpoint that returns Factual IDs only: Factual 
  
 ## Resolve Example
 Use the common query structure to add known attributes to the query:
-
+```PHP
     // Get all entities that are possibly a match
 	$query = new ResolveQuery();
 	$query->add("name", "Buena Vista Cigar Club");
@@ -1034,7 +1035,7 @@ Use the common query structure to add known attributes to the query:
 	$res = $factual->fetch("places", $query);	
       
 And then use methods on the result object to determine resolution:
-
+```PHP
     //Did the entity resolve? (returns bool)
     $isResolved = $res->isResolved();
     
@@ -1043,7 +1044,7 @@ And then use methods on the result object to determine resolution:
    
 ### Shortcut Method    
 Alternatively use the shortcut to return the resolved entity OR null if no resolution:
-	
+```PHP
 	//Resolve and return
 	$tableName = "places";
 	$vars = array(
@@ -1060,7 +1061,7 @@ Resolve API Documentation: http://developer.factual.com/api-docs/#Resolve
 While Factual's <tt>places</tt> table provides access to the world's business and landmarks, our <tt>world-geographies</tt> table provides structured access to over 5.2 million geographies with 8.3 million name variants in 250 countries.  Use our World Geographies table to lookup placenames, see how one place relates to another, and translate placenames between multiple languages.
 
 ## World Geographies Example
-
+```PHP
 	//find all localities (towns and cities) called "Wayne" in the US 
 	$query = new FactualQuery;
 	$query->field("name")->equal("wayne");
@@ -1077,7 +1078,7 @@ All Factual Places are classified into one of over 400 categories.
 
 ## Searching by Categories
 Search the category_id field:
-	
+```PHP
 	$category = "107"; //landmarks
 	$query = new FactualQuery;	
 	$query->field("category_ids")->in($category); //retrieves this category and all its descendants
@@ -1091,7 +1092,7 @@ Factual <tt>Global Products</tt> provides detailed product data for over 500,000
 pages across the web.  See the [Global Products API documentation](http://developer.factual.com/display/docs/Products+-+CPG) for details on this fully operational battlestation.
 
 ## Global Products Examples
-
+```PHP
 	$tableName = "products-cpg";
 
 	//Search for products containing the word "shampoo"
@@ -1143,7 +1144,7 @@ These methods sign, encode, and submit the request. Responses are raw JSON, not 
 
 ## Raw GET
 Use for all GET operations, basically all queries and other read-only calls to the Factual service.
-
+```PHP
 	//Raw Get Test
 	$path = "t/global";
 	$params['filters'] = "{\"\$and\":[{\"country\":{\"\$eq\":\"CA\"}},{\"locality\":{\"\$eq\":\"Toronto\"}}]}";
@@ -1153,7 +1154,7 @@ Use for all GET operations, basically all queries and other read-only calls to t
 	print_r($res);
 
 In the above example we've escaped the JSON so it parses.  As a cheeky but more lengthly alternative, you can create the filter as a nested array and json encode it, obviating the need to escape the JSON string:
-
+```PHP
 	//create each filter as an array
 	$countryFilter = array (
 			'country'=> array (
@@ -1175,7 +1176,7 @@ Generally tho, stick with the parametric filter methods; the raw reqest mode is 
 
 ##Raw POST
 Use for all POST operations: primarily the Submit and Flag APIs.
-
+```PHP
 	//Raw POST Test
 	$path = "t/2EH4Pz/f33527e0-a8b4-4808-a820-2686f18cb00c/flag";
 	$post['user'] = "testUser";
@@ -1189,7 +1190,7 @@ The Boost API helps Factual address the stateless aspect of HTTP to improve sear
 
 This code picks up after the search.  You'll need to squirrel away the query in the user session or similar:
 
-```php
+```PHP
   $factual = new Factual($key,$secret); 
 	$boost = new FactualBoost; //create the boost object for populating
 	$boost->setQueryString("chipotle palo alto"); //use for free text queries only
@@ -1246,7 +1247,7 @@ A single diff consists of a complete JSON array.  The diffs feed is a stream of 
 The <tt>payload</tt> contains the entire record, while the <tt>changed</tt>element highlights only those items that have been modified.
 
 ## Getting Diffs
-
+```PHP
 	//Getting started
 	require_once('Factual.php');
 	$factual = new Factual($key,$secret);
@@ -1262,7 +1263,7 @@ Having run the Diffs query, there are a few things you can do with the resultant
 ## Working with the Diffs Response Object
 
 ### Getting Summary Statistics	
-
+```PHP
 	//show summary stats
 	print_r($res->getStats());
 	
@@ -1282,18 +1283,18 @@ returns an overview of the update counts and window duration:
 
 ### Iterate Through the Diffs	
 The result object is an ArrayIterator, so you can walk through the results:
-
+```PHP
 	foreach ($res as $diff){
 		print_r($diff);
 	}
 	
 outputs the diffs as an array, one at a time.  You can grab all diffs as an array of diff arrays:
-
+```PHP
 	$allDifs = $res->getDiffs();
 
 ### Get Start and End Window Times
 The result object provides additional methods to determine the specific start, end, and duration timestamps for the diffs window:
-
+```PHP
 	$end = $res->getEnd() //get close of window as timestamp
 	$duration = $res->getDuration() //get duration of window as timestamp
 	$start = $res->getStart() //get start of window as timestamp
@@ -1311,13 +1312,13 @@ Our 'Multi' feature allows you to make up to three queries via a single http req
 
 ## A Multi Example
 Create your query objects as usual, and add them to the query queue using <tt>multiQueue()</tt>:
-
+```PHP
 	//create first query and add to queue
 	$query1 = new FactualQuery;
 	$query1->limit(3);
 	$query1->only("factual_id,name");
 	$factual->multiQueue("global", $query1, "globalQ"); //'globalQ' is the arbitrary handle for this query
-
+```PHP
 	//create second query and add to queue
 	$query2 = new FactualQuery;
 	$query2->limit(3);
@@ -1327,12 +1328,12 @@ Create your query objects as usual, and add them to the query queue using <tt>mu
 Note that <tt>multiQueue()</tt> parameters are just like those of the <tt>fetch()</tt> method but include a required third parameter: an arbitrary string that you use to identify the results from each query. These must be unique to each query.
 
 Use <tt>multiFetch()</tt> to send your request:
-
+```PHP
 	//make multi request
 	$res = $factual->multiFetch();
 
 and iterate through the response to obtain each response object:
-
+```PHP
 	//iterate through response objects
 	foreach ($res as $queryResponse){
 	    print_r($queryResponse->getData());
@@ -1354,7 +1355,7 @@ Factual files contain millions of records.  If you're trying to use Excel, don't
 
 ## Loading to SQL or Other System
 Loading data into a database is pretty straightforward using the <tt>fgetcsv</tt> command:
-
+```PHP
 	//get file pointer
 	filename = "path/to/data/file";
 	$fp = fopen($filename, "r");
