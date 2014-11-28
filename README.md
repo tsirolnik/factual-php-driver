@@ -642,14 +642,14 @@ Strictly speaking, we do an 'UPSERT' when you contribute data: we determine if t
 You can determine whether the entity you submitted is new:
 ```php
 	//is the submission a new entity?
-	$factualID = $res->isNew();
+	$isNew = $res->isNew();
 ```
 However, It's always a good idea to obtain the Factual ID from a Submit Result, and store it against the submitted entity:
 ```php
 	//get Factual ID of submitted entity
 	$factualID = $res->getFactualID();
 ```
-We return a Factual ID with every Submit Result; it is good practice to make a note of this and store it, and verify it against the ID you submitted.  In a few cases (such as if the entity you submitted has been deprecated), we may return a Factual ID different from the one you submitted.  In very limited circumstances, submissions may not be matched to records in realtime, and thus no factual_id will be provided.
+We attempt to return a Factual ID with every Submit Result; it is good practice to make a note of this and store it, and verify it against the ID you submitted.  In a few cases (such as if the entity you submitted has been deprecated), we may return a Factual ID different from the one you submitted.  In very limited circumstances, submissions may not be matched to records in realtime, and thus no factual_id will be provided.
 
 ## Submit Parameters
 
@@ -735,6 +735,19 @@ By default Factual employs a separate call to clear a field of information.  Thi
 ```	
 will behave identically to sending a submit request with the name, address and a clear request for the address_extended, to update the address and remove the existing extended address.
 
+##Delayed Writes
+Sometimes, if rarely, the write is cached and not written directly.  In these instances, neither a commitID nor a Factual ID will be returned.
+
+As this is an expected, if unusual program flow, it is best to check submissions with the isDelayed() method:
+
+	//make request
+	$res = $factual->submit($submitterator);
+	if (!$res->isDelayed()){
+		//store Factual ID and Commit ID
+	} else {
+		//do omething else
+	}
+
 ##Submit Examples
 
 <b><ex>Add data to Factual's Places table:</ex></b><br>
@@ -760,7 +773,11 @@ will behave identically to sending a submit request with the name, address and a
 
 	//confirm status of submission
 	if ($res->success()){
-		echo "OK\n";
+		if ($res->isDelayed){
+			echo "OK, but delayed write\n";
+		} else {
+			echo "OK\n";
+		}
 	} else {
 		echo "Borked\n";
 	}
