@@ -21,7 +21,7 @@ class SubmitResponse extends FactualResponse {
 	protected function parseJSON($json){
 		$rootJSON = parent::parseJSON($json);
 		//in some instances writes to the system will be delayed, and we cannot provide a committ ID
-		if ($rootJSON['error_type'] == "DelayedResponse"){
+		if ( array_key_exists( 'error_type', $rootJSON ) && $rootJSON['error_type'] == "DelayedResponse"){
 			//throw new Exception($rootJSON['message']);
 			$this->isDelayed = true;
 		} else {
