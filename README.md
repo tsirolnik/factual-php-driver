@@ -516,7 +516,7 @@ You can use limit and offset to support basic results paging. For example:
 ```
 NOTE: the driver is designed to access Factual's API at runtime.   We enforce a deep paging limit of 500 rows for any unique combination of filters: http://developer.factual.com/data-docs/
 
-This is the polite way of saying we'd rather you did not use our API to scrape Factual data for permanent retention.  We dod provide downloads of the entire dataset: contact sales@factual.com
+This is the polite way of saying we'd rather you did not use our API to scrape Factual data for permanent retention.  We do provide downloads of the entire dataset: contact partnership@factual.com
 
 ##Total Row Count
 Factual does not return the total number of records matching your filter by default -- there is a modest overhead in calculating this. We do however provide you the option of retrieving it explicitly.
