@@ -40,7 +40,7 @@ Require the file 'Factual.php, and instantiate a <tt>factual</tt> object with th
     //setup
     require_once('Factual.php');
     $factual = new Factual("yourOauthKey","yourOauthSecret");
-	
+```
 The driver creates an authenticated handle to Factual and configures class loading on instantiation, so be sure to always instantiate a Factual object first.
     
 ## Simple Query Example
@@ -52,7 +52,7 @@ The driver creates an authenticated handle to Factual and configures class loadi
     $query->limit(3);
     $res = $factual->fetch("places", $query);
 	print_r($res->getData());
-	
+```	
 ## Full Text Search Example
 ```php
     // Find entities that match a full text search for Sushi in Santa Monica:
@@ -60,7 +60,7 @@ The driver creates an authenticated handle to Factual and configures class loadi
 	$query->search("Sushi Santa Monica");
     $res = $factual->fetch("places", $query);
 	print_r($res->getData());
-
+```
 See <a href="https://github.com/Factual/factual-php-driver/wiki/Working-with-Query-Results">Working with Query Results</a> for details on iterating through the results of your query, and obtaining query metadata.
 
 Unnecessary Reminder: we use <tt>print_r()</tt> in these examples so you can review the output visually.  Obviously, but worth a reminder nonetheless, you do not want to use <tt>print_r()</tt> in production.  
