@@ -20,7 +20,7 @@ All classes are autoloaded.  Just <tt>require_once("Factual.php")</tt> and you'r
 The PHP <tt>__autoload()</tt> method is deprecated; this library uses <tt>spl_autoload_register()</tt>.  The Factual Autoload will not mess with other libraries or frameworks.
 
 #Getting Started
-## Get an API Key
+## Get an Oauth Key & Secret
 Obtain an oauth key and secret from Factual at https://www.factual.com/api-keys/request.  Do not expose your _secret_ to third-parties or  distribute it in PHP code (reminder: that's why it is called 'secret').
 
 ## Test Your Integration and Environment
