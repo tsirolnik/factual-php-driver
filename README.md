@@ -634,6 +634,8 @@ Facets API Documentation: http://developer.factual.com/api-docs/#Facets
 #Write
 The Submit endpoint allows you to add a record to Factual, or to update an existing record.  To delete a record, see the flag() method, below.  
 
+Unverified accounts are restricted from making submit API calls.  Log in to Factual, and verify your account at  http://www.factual.com/keys/verify.
+
 ## Syntax
 Strictly speaking, we do an 'UPSERT' when you contribute data: we determine if the entity already exists, and update it appropriately; if not we create a new entity.  This avoids dupes and allows you to contribute data even if you do not know the Factual ID.  However, if you do, please include it to remove any ambiguity using the <tt>FactualSubmittor::setFactualID()</tt> method.  The only difference between updating an extant record and adding a new one is this inclusion of the Factual ID:
 ```php
