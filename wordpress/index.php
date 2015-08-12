@@ -1,8 +1,8 @@
 <html>
 <head>
 <title>Factual Wordpress MapBox Example</title>
-<script src="https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.js"></script>
-<link href="https://api.tiles.mapbox.com/mapbox.js/v1.6.1/mapbox.css" rel="stylesheet" />
+<script src="https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.js"></script>
+<link href="https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.css" rel="stylesheet" />
 <!-- no fancy styling or boostrap. trying to minimize framework dependencies for a simple example. -->
 <style>
 body { margin:0; padding:0; }
@@ -17,8 +17,14 @@ body { margin:0; padding:0; }
 /** load factual driver. Make sure the path below matches what you have! */
 require_once('./wp-content/plugins/factual-php-driver-master/Factual.php');
 
-/** factual driver. put your key and secret here! **/
-$factual = new Factual("YOUR_KEY","YOUR_SECRET"); 
+/** credentials for Factual and Mapbox */
+$factual_api_key     = "YOUR_FACTUAL_API_KEY";
+$factual_api_sec     = "YOUR_FACTUAL_API_SECRET";
+$mapbox_access_token = "YOUR_MAPBOX_ACCESS_TOKEN";
+$mapbox_map_id       = "YOUR_MAP_ID";
+
+/** instantiate Factual driver **/
+$factual = new Factual($factual_api_key, $factual_api_sec);
 
 /** GET params */
 define(PAGE_SIZE, 10);
@@ -41,19 +47,19 @@ print("<form class=\"searchform\" name=\"input\" action=\"./\" method=\"get\">\r
 print("<b>search</b> for <input class=\"search\" type=\"text\" value=\"" . $q . "\" name=\"q\"/> in ");
 print("<b>postcode</b> <input class=\"postcode\" type=\"text\" value=\"" . $zip . "\" name=\"postcode\"/>");
 print("<input type=\"submit\" value=\"search\">\r\n");
-print("<input type=\"checkbox\" name=\"categories\" value=\"312,347\"" . $filter . "/>Only Find Restaurants & Bars");
+print("<input type=\"checkbox\" name=\"categories\" value=\"312,347\"" . $filter . "/>Only Search Restaurants &amp; Bars");
 print("</form>\r\n");
 
 try{
 
   /** make the query */
-  $query    = new FactualQuery;
+  $query = new FactualQuery;
   $query->search($q);
   $query->offset($page * PAGE_SIZE);
   $query->limit(PAGE_SIZE);
   $query->includeRowCount();
   $query->threshold("default"); // see http://developer.factual.com/search-placerank-and-boost/#existence
- 
+
   if ($zip){
     $query->field("postcode")->equal($zip);
   }
@@ -146,14 +152,21 @@ try{
   print("  };\r\n");
 
   /** Be sure to register your own mapbox account and populate your key here */
-  print("  var map = L.mapbox.map('map', 'examples.map-20v6611k');\r\n");
-  print("  map.markerLayer.setGeoJSON(geoJson);\r\n");
-  print("  map.markerLayer.on('mouseover', function(e) {e.layer.openPopup();});\r\n");
-  print("  map.markerLayer.on('mouseout', function(e) {e.layer.closePopup();});\r\n");
+  print("  L.mapbox.accessToken = '".$mapbox_access_token."';\r\n");
+  print("  var map = L.mapbox.map('map', '".$mapbox_map_id."');\r\n");
+  print("  var featureLayer = L.mapbox.featureLayer().addTo(map);\r\n");
+  print("  featureLayer.on('layeradd', function(e) {\r\n");
+  print("      var marker = e.layer,\r\n");
+  print("          feature = marker.feature;\r\n");
+  print("      var popupContent = feature.properties.name + '<br/>' + feature.properties.address;\r\n");
 
-  print("  map.on('load', function(){\r\n");
-  print("    this.fitBounds(this.markerLayer.getBounds());\r\n");
+  print("      marker.bindPopup(popupContent,{\r\n");
+  print("          closeButton: false\r\n");
+  print("      });\r\n");
   print("  });\r\n");
+
+  print("  featureLayer.setGeoJSON(geoJson);\r\n");
+  print("  map.fitBounds(featureLayer.getBounds());\r\n");
 
   print("</script>\r\n");
 } catch (Exception $e){
