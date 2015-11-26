@@ -17,12 +17,13 @@ class ResolveQuery extends FactualQuery {
 
 	/**
 	 * Adds name/key pair to query for eventual resolution
-	 * @param string key Attribute name
-	 * @param mixed val Attribute value
+	 * @param array keyValueArray A key value array
 	 * $return object This query object 
 	 */
-  public function add($key, $val) {
-  	$this->values[$key]=$val;
+  public function add($keyValueArray) {
+  	foreach($keyValueArray as $key => $value) {
+  		$this->values[$key]=$value;	
+  	}
     return $this;
   }
 
